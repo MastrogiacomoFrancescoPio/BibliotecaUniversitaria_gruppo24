@@ -26,7 +26,8 @@ public class Main extends Application {
         
         
         StageHelper.switchToNew(stage, "schermatalogin", "Schermata d'accesso"); //Imposta la prima schermata
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("immagini/icon.png"))); //cambia l'icona del programma
+        Image icon = new Image(getClass().getResourceAsStream("immagini/icon.png"));
+        stage.getIcons().add(icon); //cambia l'icona del programma
         stage.show();
     }
 

@@ -41,6 +41,9 @@ public class GestioneUtentiController {
     private TextField matricolaTxt;
     @FXML
     private TextField emailTxt;
+    
+    @FXML
+    private Button sospendiBtn;
 
 
     @FXML
@@ -127,6 +130,13 @@ public class GestioneUtentiController {
 
         colonnaSospensioni.setEditable(false);
         tabellaUtenti.setEditable(true);
+        tabellaUtenti.getSelectionModel().selectedItemProperty().addListener((obs,old,newValue) -> {
+            if(newValue.isSospeso()) {
+                sospendiBtn.setText("SBLOCCA");
+            } else {
+                sospendiBtn.setText("SOSPENDI");
+            }
+        });
 
         colonnaNome.setOnEditCommit(e -> {
             e.getRowValue().setNome(e.getNewValue());
@@ -265,11 +275,13 @@ public class GestioneUtentiController {
         if (!result.isPresent() || result.get() != ButtonType.YES) return;
         if (selezionato.isSospeso()) {
             selezionato.revocaSospensione(true);
+            sospendiBtn.setText("SOSPENDI");
             tabellaUtenti.setItems(Biblioteca.getListaUtenti());
             tabellaUtenti.refresh();
             Archivio.scrivi(Biblioteca.getListaUtenti(), Archivio.fileUtenti);
         } else {
             selezionato.sospendi(30,true);
+            sospendiBtn.setText("SBLOCCA");
             tabellaUtenti.setItems(Biblioteca.getListaUtenti());
             tabellaUtenti.refresh();
             Archivio.scrivi(Biblioteca.getListaUtenti(), Archivio.fileUtenti);
