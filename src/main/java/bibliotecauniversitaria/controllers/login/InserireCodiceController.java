@@ -9,7 +9,6 @@ import bibliotecauniversitaria.utils.StageHelper;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -21,12 +20,7 @@ public class InserireCodiceController {
     public TextField codiceFld;
 
     public String codice;
-
-    @FXML
-    private Pane pane;
-
-   
-
+    
     @FXML
     protected void onConferma() {
         if(!codiceFld.getText().equals(codice)){

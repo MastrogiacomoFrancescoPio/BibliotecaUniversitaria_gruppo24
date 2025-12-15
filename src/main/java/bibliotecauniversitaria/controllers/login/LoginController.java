@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import java.io.IOException;
 import javafx.scene.control.CheckBox;
@@ -21,8 +20,6 @@ public class LoginController {
     public CheckBox mostraPassword;
 
     @FXML
-    private Pane pane;
-
     private UserArchive user;
 
     @FXML
