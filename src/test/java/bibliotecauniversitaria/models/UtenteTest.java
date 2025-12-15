@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import javafx.collections.FXCollections;
 import org.junit.jupiter.api.AfterEach;
@@ -17,6 +18,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -30,9 +33,12 @@ public class UtenteTest {
     private final String COGNOME = "Rossi";
     private final String EMAIL = "mariorossi@hotmail.com";
 
+    @TempDir
+    static Path tempConfigFolder;
+
     @BeforeAll
     public static void setUpClass() {
-        TestHelper.salva();
+        TestHelper.salva(tempConfigFolder);
     }
 
     @AfterAll

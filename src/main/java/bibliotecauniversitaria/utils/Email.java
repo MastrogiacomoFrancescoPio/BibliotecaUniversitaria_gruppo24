@@ -52,7 +52,7 @@ public class Email {
      * @return true se la chiave "SMTP_CONFIGURATO" è impostata su "true", false altrimenti.
      */
     public static boolean isConfigurato() {
-        return Biblioteca.configurazione.get("SMTP_CONFIGURATO").equals("true");
+        return Biblioteca.configurazione.get("SMTP_CONFIGURATO")!=null&&Biblioteca.configurazione.get("SMTP_CONFIGURATO").equals("true");
     }
     
     /**
@@ -68,7 +68,7 @@ public class Email {
      * @throws MessagingException Se si verifica un errore durante l'invio (es. credenziali errate).
      */
     public static void mandaMailPagina(String mail, String soggetto, String nomeDelHtml, HashMap<String, String> chiavi) throws MessagingException {
-                if(!isConfigurato()) return;
+        if(!isConfigurato()) return;
         try (InputStream in = Main.class.getResourceAsStream("html/"+nomeDelHtml+".html")) {
             String html = new BufferedReader(new InputStreamReader(in))
                     .lines()

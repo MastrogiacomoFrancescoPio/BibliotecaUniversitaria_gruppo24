@@ -278,7 +278,6 @@ public class Biblioteca implements Serializable {
             throw new UtenteGiaEsistenteException("E' già presente un utente con e-mail " + u.getEmail());
         }
         boolean b = listaUtenti.add(u);
-
         HashMap<String, String> sostituzioni = new HashMap<>();
         sostituzioni.put("nome", u.getNome());
         sostituzioni.put("cognome", u.getCognome());

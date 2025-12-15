@@ -1,8 +1,12 @@
 package bibliotecauniversitaria;
 
 import bibliotecauniversitaria.models.*;
+import bibliotecauniversitaria.utils.Configurazione;
 import javafx.collections.ObservableList;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Random;
 
 public class TestHelper {
@@ -11,11 +15,21 @@ public class TestHelper {
     public static ObservableList<Utente> listaUtenti;
     public static ObservableList<Libro> listaLibri;
 
-    public static void salva() {
+    public static void salva(Path temp) {
         Biblioteca.carica();
         listaPrestiti = Biblioteca.getListaPrestiti();
         listaUtenti = Biblioteca.getListaUtenti();
         listaLibri = Biblioteca.getListaLibri();
+        Biblioteca.configurazione = new Configurazione();
+        if(temp!=null){
+            File file = new File(temp.toFile(),"configurazione_test");
+            Biblioteca.configurazione.salvaDefault(file);
+            try {
+                Biblioteca.configurazione.carica(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public static void ripristina() {

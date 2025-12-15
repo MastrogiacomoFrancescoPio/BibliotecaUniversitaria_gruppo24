@@ -7,9 +7,12 @@ package bibliotecauniversitaria.models;
 
 import bibliotecauniversitaria.TestHelper;
 import bibliotecauniversitaria.utils.Configurazione;
+
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.UUID;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.junit.jupiter.api.AfterEach;
@@ -17,6 +20,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -25,9 +30,12 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class BibliotecaTest {
 
+    @TempDir
+    static Path tempConfigFolder;
+
     @BeforeAll
     public static void salva() {
-        TestHelper.salva();
+        TestHelper.salva(tempConfigFolder);
     }
 
     @AfterAll
@@ -41,8 +49,9 @@ public class BibliotecaTest {
         Biblioteca.setListaUtenti(FXCollections.observableArrayList());
         Biblioteca.setListaLibri(FXCollections.observableArrayList());
         Biblioteca.setListaPrestiti(FXCollections.observableArrayList());
+        Biblioteca.configurazione = new Configurazione();
     }
-    
+
     /**
      * Test of getConfigurazione method, of class Biblioteca.
      */
@@ -56,8 +65,6 @@ public class BibliotecaTest {
         Configurazione result = instance.getConfigurazione();
 
         assertEquals(config, result);
-
-        Biblioteca.configurazione = null;
     }
 
     /**
@@ -159,19 +166,19 @@ public class BibliotecaTest {
      */
     @Test
     public void testTogliSospensioni() {
-       System.out.println("testTogliSospensioni");
+        System.out.println("testTogliSospensioni");
 
-       
+
         Utente utenteDaRevocare = new Utente("M001", "Mario", "Rossi", "m@b.c");
         utenteDaRevocare.setDataFineSospensione(LocalDate.now().minusDays(1));
-        utenteDaRevocare.setSospeso(true); 
-        
+        utenteDaRevocare.setSospeso(true);
+
         Utente utenteDaIgnorare = new Utente("M002", "Luca", "Verdi", "l@b.c");
 
         Utente altroUtenteDaRevocare = new Utente("M003", "Anna", "Neri", "a@b.c");
         altroUtenteDaRevocare.setDataFineSospensione(LocalDate.now().minusDays(5));
-         altroUtenteDaRevocare.setSospeso(true);
-        
+        altroUtenteDaRevocare.setSospeso(true);
+
         ObservableList<Utente> listaIniziale = FXCollections.observableArrayList(
                 utenteDaRevocare, utenteDaIgnorare, altroUtenteDaRevocare
         );
@@ -181,9 +188,9 @@ public class BibliotecaTest {
         Biblioteca.configurazione.valori.put("SMTP_CONFIGURATO", "false");
         Biblioteca.togliSospensioni();
 
-        assertFalse(utenteDaRevocare.isSospensioneScaduta(), "Utente 1: La revocaSospensione doveva essere chiamata e lo stato modificato.");     
-        assertFalse(utenteDaIgnorare.isSospensioneScaduta(),"Utente 2: La revocaSospensione NON doveva essere chiamata.");        
-        assertFalse(altroUtenteDaRevocare.isSospensioneScaduta(),  "Utente 3: La revocaSospensione doveva essere chiamata e lo stato modificato.");
+        assertFalse(utenteDaRevocare.isSospensioneScaduta(), "Utente 1: La revocaSospensione doveva essere chiamata e lo stato modificato.");
+        assertFalse(utenteDaIgnorare.isSospensioneScaduta(), "Utente 2: La revocaSospensione NON doveva essere chiamata.");
+        assertFalse(altroUtenteDaRevocare.isSospensioneScaduta(), "Utente 3: La revocaSospensione doveva essere chiamata e lo stato modificato.");
     }
 
     /**
@@ -191,18 +198,18 @@ public class BibliotecaTest {
      */
     @Test
     public void testOttieniUtenteDaID() {
-    Utente utenteTrovato = new Utente("M001", "Mario", "Rossi", "m@b.c");
-   
-    UUID idTrovato = utenteTrovato.getUUID();
-    
-    UUID idSconosciuto = UUID.randomUUID();
-    
-    Biblioteca.setListaUtenti(FXCollections.observableArrayList(utenteTrovato, new Utente("M002", "Luca", "Verdi", "l@b.c"))); 
-    
-    Utente risultatoTrovato = Biblioteca.ottieniUtenteDaID(idTrovato);
-    assertEquals(utenteTrovato, risultatoTrovato, "Dovrebbe restituire l'utente con l'ID fornito."); 
+        Utente utenteTrovato = new Utente("M001", "Mario", "Rossi", "m@b.c");
 
-        
+        UUID idTrovato = utenteTrovato.getUUID();
+
+        UUID idSconosciuto = UUID.randomUUID();
+
+        Biblioteca.setListaUtenti(FXCollections.observableArrayList(utenteTrovato, new Utente("M002", "Luca", "Verdi", "l@b.c")));
+
+        Utente risultatoTrovato = Biblioteca.ottieniUtenteDaID(idTrovato);
+        assertEquals(utenteTrovato, risultatoTrovato, "Dovrebbe restituire l'utente con l'ID fornito.");
+
+
         Utente risultatoNonTrovato = Biblioteca.ottieniUtenteDaID(idSconosciuto);
         assertNull(risultatoNonTrovato, "Dovrebbe restituire null se l'ID non è presente nella lista.");
 
@@ -216,22 +223,22 @@ public class BibliotecaTest {
      */
     @Test
     public void testOttieniLibroDaID() {
-    UUID idLibroSconosciuto = UUID.randomUUID();
-    
-    Libro libroDaTrovare = new Libro("Titolo", "Autore", " ", 1, 1);
-    UUID idLibroTrovato = libroDaTrovare.getUUID();
+        UUID idLibroSconosciuto = UUID.randomUUID();
 
-    
-    Biblioteca.setListaLibri(FXCollections.observableArrayList(libroDaTrovare, new Libro("Titolo2", "Autore2", " ", 2, 2))); 
-    
-    Libro risultatoTrovato = Biblioteca.ottieniLibroDaID(idLibroTrovato);
-    assertEquals(libroDaTrovare, risultatoTrovato, "Dovrebbe restituire l'oggetto Libro con l'ID fornito."); 
+        Libro libroDaTrovare = new Libro("Titolo", "Autore", " ", 1, 1);
+        UUID idLibroTrovato = libroDaTrovare.getUUID();
 
-    Libro risultatoNonTrovato = Biblioteca.ottieniLibroDaID(idLibroSconosciuto);
-    assertNull(risultatoNonTrovato, "Dovrebbe restituire null se l'ID non è presente nella lista.");
 
-    Libro risultatoNull = Biblioteca.ottieniLibroDaID(null);
-    assertNull(risultatoNull, "Dovrebbe restituire null quando l'input UUID è null.");
+        Biblioteca.setListaLibri(FXCollections.observableArrayList(libroDaTrovare, new Libro("Titolo2", "Autore2", " ", 2, 2)));
+
+        Libro risultatoTrovato = Biblioteca.ottieniLibroDaID(idLibroTrovato);
+        assertEquals(libroDaTrovare, risultatoTrovato, "Dovrebbe restituire l'oggetto Libro con l'ID fornito.");
+
+        Libro risultatoNonTrovato = Biblioteca.ottieniLibroDaID(idLibroSconosciuto);
+        assertNull(risultatoNonTrovato, "Dovrebbe restituire null se l'ID non è presente nella lista.");
+
+        Libro risultatoNull = Biblioteca.ottieniLibroDaID(null);
+        assertNull(risultatoNull, "Dovrebbe restituire null quando l'input UUID è null.");
 
         Biblioteca.setListaLibri(FXCollections.observableArrayList());
     }
@@ -387,11 +394,11 @@ public class BibliotecaTest {
 
     @Test
     public void testCercaLibro_Autore() {
-        Libro l1_r = new Libro("Java Tutorial #1","Peppe","",1,1);
-        Libro l2_dummy = new Libro("Java Tutorial #2","Giggino","",1,1);
-        Libro l1_s = new Libro("","Peppe","",0,0);
+        Libro l1_r = new Libro("Java Tutorial #1", "Peppe", "", 1, 1);
+        Libro l2_dummy = new Libro("Java Tutorial #2", "Giggino", "", 1, 1);
+        Libro l1_s = new Libro("", "Peppe", "", 0, 0);
 
-        Biblioteca.setListaLibri(FXCollections.observableArrayList(l1_r,l2_dummy));
+        Biblioteca.setListaLibri(FXCollections.observableArrayList(l1_r, l2_dummy));
         ObservableList<Libro> trovati = Biblioteca.cercaLibro(l1_s);
         assertEquals(l1_r.getUUID(), trovati.get(0).getUUID());
         assertEquals(1, trovati.size());
@@ -412,24 +419,19 @@ public class BibliotecaTest {
      */
     @Test
     public void testAggiungiUtente() {
-       System.out.println("testAggiungiUtente");
-
-        Utente nuovoUtente = new Utente("M001", "Mario", "Rossi", "m@b.c"); 
-        
+        Utente nuovoUtente = new Utente("M001", "Mario", "Rossi", "m@b.c");
         assertTrue(Biblioteca.getListaUtenti().isEmpty(), "La lista deve essere vuota prima del test.");
-
         boolean result = Biblioteca.aggiungiUtente(nuovoUtente);
-
         assertTrue(result, "Il risultato di add() dovrebbe essere true per un'aggiunta valida.");
-
         ObservableList<Utente> listaFinale = Biblioteca.getListaUtenti();
         assertFalse(listaFinale.isEmpty(), "La lista non deve essere vuota.");
         assertTrue(listaFinale.contains(nuovoUtente), "La lista deve contenere l'utente aggiunto.");
     }
+
     @Test
     public void testAggiungiUtente_AggiuntaNull() {
         boolean result = Biblioteca.aggiungiUtente(null);
-        assertFalse(result, "L'aggiunta di null in una lista standard Java dovrebbe restituire true."); 
+        assertFalse(result, "L'aggiunta di null in una lista standard Java dovrebbe restituire true.");
     }
 
     /**
@@ -471,20 +473,20 @@ public class BibliotecaTest {
     @Test
     public void testTrovaDaEmail() {
         System.out.println("testTrovaDaEmail");
-        
-    final String EMAIL_TROVATA = "mario.rossi@biblio.it";
-    final String EMAIL_ASSENTE = "assente@biblio.it";
 
-    Utente utenteDaTrovare = new Utente("M001", "Mario", "Rossi", "mario.rossi@biblio.it");
-    
-    Utente altroUtente = new Utente("M002", "Luca", "Verdi", "l@v.c");
-    
-    Biblioteca.setListaUtenti(FXCollections.observableArrayList(utenteDaTrovare, altroUtente)); 
+        final String EMAIL_TROVATA = "mario.rossi@biblio.it";
+        final String EMAIL_ASSENTE = "assente@biblio.it";
 
-    ObservableList<Utente> risultatiTrovati = Biblioteca.trovaDaEmail(EMAIL_TROVATA);
-    assertFalse(risultatiTrovati.isEmpty(), "Deve essere restituita almeno una corrispondenza.");
-    assertEquals(1, risultatiTrovati.size(), "Dovrebbe esserci un solo risultato per l'email unica.");
-    assertEquals(utenteDaTrovare, risultatiTrovati.get(0), "L'oggetto Utente deve essere quello atteso.");
+        Utente utenteDaTrovare = new Utente("M001", "Mario", "Rossi", "mario.rossi@biblio.it");
+
+        Utente altroUtente = new Utente("M002", "Luca", "Verdi", "l@v.c");
+
+        Biblioteca.setListaUtenti(FXCollections.observableArrayList(utenteDaTrovare, altroUtente));
+
+        ObservableList<Utente> risultatiTrovati = Biblioteca.trovaDaEmail(EMAIL_TROVATA);
+        assertFalse(risultatiTrovati.isEmpty(), "Deve essere restituita almeno una corrispondenza.");
+        assertEquals(1, risultatiTrovati.size(), "Dovrebbe esserci un solo risultato per l'email unica.");
+        assertEquals(utenteDaTrovare, risultatiTrovati.get(0), "L'oggetto Utente deve essere quello atteso.");
 
         ObservableList<Utente> risultatiAssenti = Biblioteca.trovaDaEmail(EMAIL_ASSENTE);
         assertNotNull(risultatiAssenti, "Il risultato non deve mai essere null.");
@@ -607,10 +609,10 @@ public class BibliotecaTest {
         Prestito nuovoPrestito = new Prestito(libroPrestato.getUUID(), utenteChePrende.getUUID(), LocalDate.now(), LocalDate.now().plusWeeks(2));
 
         Biblioteca.setListaLibri(FXCollections.observableArrayList(libroPrestato));
-        Biblioteca.setListaUtenti(FXCollections.observableArrayList(utenteChePrende)); 
-        Biblioteca.setListaPrestiti(FXCollections.observableArrayList()); 
-        
-        boolean result = Biblioteca.aggiungiPrestito(nuovoPrestito,false);
+        Biblioteca.setListaUtenti(FXCollections.observableArrayList(utenteChePrende));
+        Biblioteca.setListaPrestiti(FXCollections.observableArrayList());
+
+        boolean result = Biblioteca.aggiungiPrestito(nuovoPrestito, false);
 
         assertTrue(result, "Il risultato del metodo deve essere TRUE per un'aggiunta valida.");
 

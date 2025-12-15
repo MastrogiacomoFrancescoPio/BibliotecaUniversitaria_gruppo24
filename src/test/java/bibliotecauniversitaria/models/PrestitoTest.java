@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.UUID;
 import javafx.collections.FXCollections;
@@ -18,6 +19,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -39,9 +42,10 @@ public class PrestitoTest {
     public PrestitoTest() {
     }
 
+
     @BeforeAll
     public static void salva() {
-        TestHelper.salva();
+        TestHelper.salva(null);
     }
 
     @AfterAll

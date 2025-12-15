@@ -31,7 +31,7 @@ public class TestScalabilita {
     
     @BeforeAll
     public static void setUpClass() {
-        TestHelper.salva();
+        TestHelper.salva(null);
     }
     
     @AfterAll
