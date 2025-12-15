@@ -1,8 +1,11 @@
 var searchData=
 [
-  ['aggiungilibro_0',['aggiungiLibro',['../classit_1_1unisa_1_1diem_1_1ids_1_1bibliotecauniversitaria_1_1_biblioteca.html#a4e76ccaad70cc92bf001a8057e40f31f',1,'it::unisa::diem::ids::bibliotecauniversitaria::Biblioteca']]],
-  ['aggiungiprestito_1',['aggiungiPrestito',['../classit_1_1unisa_1_1diem_1_1ids_1_1bibliotecauniversitaria_1_1_utente.html#a10b8e3eab2b441bd09b8624153e59813',1,'it::unisa::diem::ids::bibliotecauniversitaria::Utente']]],
-  ['aggiungiutente_2',['aggiungiUtente',['../classit_1_1unisa_1_1diem_1_1ids_1_1bibliotecauniversitaria_1_1_biblioteca.html#af964c735d8f9e8e5f4fb29c597ddf491',1,'it::unisa::diem::ids::bibliotecauniversitaria::Biblioteca']]],
-  ['archivio_3',['Archivio',['../classit_1_1unisa_1_1diem_1_1ids_1_1bibliotecauniversitaria_1_1_archivio.html',1,'it::unisa::diem::ids::bibliotecauniversitaria']]],
-  ['archivio_2ejava_4',['Archivio.java',['../_archivio_8java.html',1,'']]]
+  ['aggiornasospensione_0',['aggiornaSospensione',['../classbibliotecauniversitaria_1_1models_1_1_utente.html#ae829767670ce3dc41fe91030cd3be8ef',1,'bibliotecauniversitaria::models::Utente']]],
+  ['aggiungilibro_1',['aggiungiLibro',['../classbibliotecauniversitaria_1_1models_1_1_biblioteca.html#ac16bd2f31e12f2340b1c055c30ac659a',1,'bibliotecauniversitaria::models::Biblioteca']]],
+  ['aggiungiprestito_2',['aggiungiPrestito',['../classbibliotecauniversitaria_1_1models_1_1_biblioteca.html#abbe5310531282f50a30a59cae87c125e',1,'bibliotecauniversitaria::models::Biblioteca']]],
+  ['aggiungiutente_3',['aggiungiUtente',['../classbibliotecauniversitaria_1_1models_1_1_biblioteca.html#aa06eb00c9357bae79347a1a77f3362dc',1,'bibliotecauniversitaria::models::Biblioteca']]],
+  ['annopubblicazioneproperty_4',['annoPubblicazioneProperty',['../classbibliotecauniversitaria_1_1models_1_1_libro.html#a46288d96cd2adab2758371437e3b2782',1,'bibliotecauniversitaria::models::Libro']]],
+  ['archivio_5',['Archivio',['../classbibliotecauniversitaria_1_1models_1_1_archivio.html',1,'bibliotecauniversitaria::models']]],
+  ['archiviotest_6',['ArchivioTest',['../classbibliotecauniversitaria_1_1models_1_1_archivio_test.html',1,'bibliotecauniversitaria::models']]],
+  ['autoreproperty_7',['autoreProperty',['../classbibliotecauniversitaria_1_1models_1_1_libro.html#a270b02b976bd2099269a3a0e72434d71',1,'bibliotecauniversitaria::models::Libro']]]
 ];

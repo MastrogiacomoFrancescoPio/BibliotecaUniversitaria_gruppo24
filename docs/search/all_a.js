@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['salvabiblioteca_0',['salvaBiblioteca',['../classit_1_1unisa_1_1diem_1_1ids_1_1bibliotecauniversitaria_1_1_biblioteca.html#a50a8a47c4f1b9fde366d66b7c56c24a4',1,'it::unisa::diem::ids::bibliotecauniversitaria::Biblioteca']]],
-  ['scrivilibri_1',['scriviLibri',['../classit_1_1unisa_1_1diem_1_1ids_1_1bibliotecauniversitaria_1_1_archivio.html#afdbe3d853714ae36847b9ce6c536d22f',1,'it::unisa::diem::ids::bibliotecauniversitaria::Archivio']]],
-  ['scriviprestiti_2',['scriviPrestiti',['../classit_1_1unisa_1_1diem_1_1ids_1_1bibliotecauniversitaria_1_1_archivio.html#ad4c02d25437a00c374c7019498e0add5',1,'it::unisa::diem::ids::bibliotecauniversitaria::Archivio']]],
-  ['scriviutenti_3',['scriviUtenti',['../classit_1_1unisa_1_1diem_1_1ids_1_1bibliotecauniversitaria_1_1_archivio.html#a5091b0aa09df9398f8a1e6499fae3b0a',1,'it::unisa::diem::ids::bibliotecauniversitaria::Archivio']]],
-  ['sospendi_4',['sospendi',['../classit_1_1unisa_1_1diem_1_1ids_1_1bibliotecauniversitaria_1_1_utente.html#aafedf43617582be6137921ba342a18f1',1,'it::unisa::diem::ids::bibliotecauniversitaria::Utente']]]
+  ['nomeproperty_0',['nomeProperty',['../classbibliotecauniversitaria_1_1models_1_1_utente.html#a423e4fdc76e105f7843993160e5466bd',1,'bibliotecauniversitaria::models::Utente']]],
+  ['numerocopiedisponibiliproperty_1',['numeroCopieDisponibiliProperty',['../classbibliotecauniversitaria_1_1models_1_1_libro.html#a5530a23e6de9bb3dfddaec89f695c86c',1,'bibliotecauniversitaria::models::Libro']]],
+  ['numerocopietotaliproperty_2',['numeroCopieTotaliProperty',['../classbibliotecauniversitaria_1_1models_1_1_libro.html#a92f677239a1cbd0c681c38847e0de569',1,'bibliotecauniversitaria::models::Libro']]],
+  ['numerosegnalazioniproperty_3',['numeroSegnalazioniProperty',['../classbibliotecauniversitaria_1_1models_1_1_utente.html#a7357bbdb205aad35d8063ed0a4f293ec',1,'bibliotecauniversitaria::models::Utente']]]
 ];
