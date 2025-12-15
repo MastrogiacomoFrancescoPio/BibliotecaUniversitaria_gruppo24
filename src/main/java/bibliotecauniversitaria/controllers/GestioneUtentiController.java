@@ -159,7 +159,6 @@ public class GestioneUtentiController {
         });
 
         tabellaUtenti.setItems(Biblioteca.getListaUtenti());
-        //Funzione che colora la riga di rosso in caso di ban
         tabellaUtenti.setRowFactory(tv -> {
             return new TableRow<Utente>() {
                 @Override
