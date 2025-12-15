@@ -1,363 +1,334 @@
 package bibliotecauniversitaria.models;
 
-import java.time.LocalDate;
-import java.util.List;
 
-public class Biblioteca {
+import java.io.*;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
-    private List<Libro> libri;
 
-    private List<Utente> utenti;
+import bibliotecauniversitaria.exceptions.LibroGiaEsistenteException;
+import bibliotecauniversitaria.exceptions.LibroInPrestitoException;
+import bibliotecauniversitaria.exceptions.UtenteGiaEsistenteException;
+import bibliotecauniversitaria.exceptions.UtenteHaPrestitiException;
+import bibliotecauniversitaria.utils.Configurazione;
+import bibliotecauniversitaria.utils.Email;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 
-    private List<Prestito> prestiti;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
-    /**
-     * @param libro
- * @brief Aggiunge un nuovo libro al catalogo della biblioteca.
- *
- * Questo metodo implementa il flusso principale del caso d'uso
- * "Inserimento Libro".
- *
- * @pre Il personale ha effettuato l'accesso (UI-1).
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Il catalogo dei libri è aggiornato con i dati del libro aggiunto.
- */
-    public void aggiungiLibro(Libro libro) {
+public class Biblioteca implements Serializable {
+
+    private static ObservableList<Libro> listaLibri = FXCollections.observableArrayList();
+    private static ObservableList<Utente> listaUtenti = FXCollections.observableArrayList();
+    private static ObservableList<Prestito> listaPrestiti = FXCollections.observableArrayList();
+
+    public static Configurazione configurazione;
+
+ 
+    public Configurazione getConfigurazione() {
+        return configurazione;
     }
 
-    /**
-     * @param isbn identificativo univoco del libro
- * @brief Rimuove un libro specifico dal catalogo della biblioteca.
- *
- * Questo metodo implementa il flusso principale del caso d'uso
- * "Rimozione Libro". Rimuove il libro selezionato dall'archivio (IF-1).
- *
- * @pre Il personale ha effettuato l'accesso al sistema (UI-1).
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- * @pre Deve essere stato selezionato un libro da rimuovere.
- *
- * @post Il libro rimosso non compare più nel catalogo libri.
- */
-    public void rimuoviLibro(String isbn) {
+    public static ObservableList<Libro> getListaLibri() {
+        return listaLibri;
     }
 
-    /**
- * @brief Ricerca e restituisce un singolo libro tramite il suo codice ISBN.
- *
- * Implementa una ricerca specifica del caso d'uso "Ricerca Libro" (IF-5.3).
- * Poiché l'ISBN è univoco, restituisce al massimo un singolo risultato.
- *
- * @param isbn Il codice ISBN (International Standard Book Number) del libro da ricercare.
- *
- * @return L'oggetto Libro corrispondente all'ISBN fornito, o {@code null} se non trovato.
- *
- * @pre Il personale ha effettuato l'accesso al sistema (UI-1).
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Il personale visualizza i dati del libro ricercato, se trovato.
- */
-    public Libro ricercaLibroPerISBN(String isbn) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-/**
- * @brief Ricerca e restituisce una lista di libri corrispondenti a un titolo.
- *
- * Implementa una ricerca generica del caso d'uso "Ricerca Libro"  (IF-5.1).
- * Potrebbe restituire più risultati, dato che titoli identici possono esistere per edizioni diverse.
- *
- * @param titolo Il titolo  del libro da ricercare.
- *
- * @return Una {@code List<Libro>} contenente tutti i libri che corrispondono al titolo inserito.
- * Restituisce una lista vuota se nessun libro corrisponde ai criteri di ricerca.
- *
- * @pre Il personale ha effettuato l'accesso al sistema (UI-1).
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Il personale visualizza tutti i libri corrispondenti ai dati inseriti.
- */
-    public List<Libro> ricercaLibroPerTitolo(String titolo) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-/**
- * @brief Ricerca e restituisce una lista di libri scritti da un autore specifico.
- *
- * Implementa una ricerca generica del caso d'uso "Ricerca Libro" (dato IF-5.2).
- *
- * @param autore Il nome e/o cognome dell'autore da ricercare.
- *
- * @return Una {@code List<Libro>} contenente tutti i libri scritti dall'autore specificato.
- * Restituisce una lista vuota se nessun libro corrisponde ai criteri di ricerca.
- *
- * @pre Il personale ha effettuato l'accesso al sistema (UI-1).
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Il personale visualizza tutti i libri corrispondenti ai dati inseriti.
- */
-    public List<Libro> ricercaLibroPerAutore(String autore) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static void setListaLibri(ObservableList<Libro> listaLibri) {
+        Biblioteca.listaLibri = listaLibri;
     }
 
-    /**
- * @brief Restituisce la lista completa dei libri presenti nel catalogo, ordinata per codice ISBN.
- *
- * Implementa l'ordinamento richiesto nel caso d'uso "Visualizzazione lista libri" (IF-4.3).
- *
- * @return Una {@code List<Libro>} contenente tutti i libri del catalogo, ordinati in base al codice ISBN (crescente).
- *
- * @pre Il personale ha effettuato l'accesso al sistema (UI-1).
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Il personale visualizza a schermo la tabella dei libri secondo l'ordine selezionato.
- */
-    public List<Libro> ottieniLibriOrdinatiPerISBN() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static ObservableList<Utente> getListaUtenti() {
+        return listaUtenti;
     }
 
-    /**
- * @brief Restituisce la lista completa dei libri presenti nel catalogo, ordinata per titolo.
- *
- * Implementa l'ordinamento richiesto nel caso d'uso "Visualizzazione lista libri" (IF-4.1).
- *
- * @return Una {@code List<Libro>} contenente tutti i libri del catalogo, ordinati alfabeticamente per titolo.
- *
- * @pre Il personale ha effettuato l'accesso al sistema (UI-1).
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Il personale visualizza a schermo la tabella dei libri secondo l'ordine selezionato.
- */
-    public List<Libro> ottieniLibriOrdinatiPerTitolo() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static void setListaUtenti(ObservableList<Utente> listaUtenti) {
+        Biblioteca.listaUtenti = listaUtenti;
     }
+
+    public static ObservableList<Prestito> getListaPrestiti() {
+        return listaPrestiti;
+    }
+
+    public static void setListaPrestiti(ObservableList<Prestito> listaPrestiti) {
+        Biblioteca.listaPrestiti = listaPrestiti;
+    }
+
     
-    /**
- * @brief Restituisce la lista completa dei libri presenti nel catalogo, ordinata per autore.
- *
- * Implementa l'ordinamento richiesto nel caso d'uso "Visualizzazione lista libri" (IF-4.2).
- *
- * @return Una {@code List<Libro>} contenente tutti i libri del catalogo, ordinati alfabeticamente per nome dell'autore.
- *
- * @pre Il personale ha effettuato l'accesso al sistema (UI-1).
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Il personale visualizza a schermo la tabella dei libri secondo l'ordine selezionato.
- */
+    public static void carica() {
+        listaLibri = Archivio.carica(Archivio.fileLibri);
+        listaUtenti = Archivio.carica(Archivio.fileUtenti);
+        listaPrestiti = Archivio.carica(Archivio.filePrestiti);
+        configurazione = new Configurazione();
 
-    public List<Libro> ottieniLibriOrdinatiPerAutore() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+        if (!Archivio.cartellaData.exists()) Archivio.cartellaData.mkdir();
 
-    /**
- * @brief Aggiunge un nuovo utente al sistema e all'archivio della biblioteca.
- *
- * Questo metodo implementa il flusso principale del caso d'uso "Inserimento Utenti". 
- * Il sistema memorizza i dati dell'utente (DF-2) nell'archivio (IF-1).
- *
- * @param utente L'oggetto Utente contenente tutti i campi inerenti all'utente da aggiungere (DF-2).
- *
- * @pre Il personale ha effettuato l'accesso al sistema.
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Un nuovo utente è inserito nel sistema.
- */
-    public void aggiungiUtente(Utente utente) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (!Configurazione.configurazioneFile.exists()) {
+            configurazione.salvaDefault(Configurazione.configurazioneFile);
+        }
+
+        try {
+            configurazione.carica(Configurazione.configurazioneFile);
+            Email.carica();
+        } catch (IOException e) {
+            new Alert(Alert.AlertType.ERROR, "Impossibile caricare la configurazione!").showAndWait();
+        }
     }
 
-    /**
- * @brief Rimuove un utente specifico dal sistema tramite la sua matricola.
- *
- * Questo metodo implementa il flusso principale del caso d'uso "Rimozione Utenti".
- * Prima della rimozione, il sistema esegue un controllo
- * per verificare la presenza di prestiti attivi (IF-9.4).
- * Se non ci sono prestiti attivi, i dati dell'utente (DF-2)
- * vengono rimossi dall'archivio (IF-1).
- *
- * @param matricola La matricola (identificativo univoco) dell'utente da rimuovere.
- *
- * @pre Il personale ha effettuato l'accesso al sistema.
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Un utente viene rimosso dal sistema.
- */
-    public void rimuoviUtente(String matricola) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static void togliSospensioni() {
+        for (Utente u : listaUtenti) {
+            u.aggiornaSospensione(true);
+        }
+        Archivio.scrivi(listaUtenti, Archivio.fileUtenti);
     }
 
-    /**
- * @brief Ricerca e restituisce un singolo utente tramite la sua matricola.
- *
- * Implementa una ricerca specifica del caso d'uso "Ricerca Utenti" (IF-11.2).
- * Poiché la matricola è univoca, restituisce al massimo un singolo risultato.
- *
- * @param matricola La matricola (identificativo univoco) dell'utente da cercare.
- *
- * @return L'oggetto Utente corrispondente alla matricola fornita, o {@code null} se non trovato.
- *
- * @pre Il personale ha effettuato l'accesso al sistema.
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post La riga della tabella degli utenti ricercati appare evidenziata.
- */
-    public Utente cercaUtentePerMatricola(String matricola) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-/**
- * @brief Ricerca e restituisce una lista di utenti con un cognome corrispondente.
- *
- * Implementa una ricerca generica del caso d'uso "Ricerca Utenti" IF-11.1).
- * Potrebbe restituire più risultati.
- *
- * @param cognome Il cognome (o una parte di esso) dell'utente da ricercare.
- *
- * @return Una {@code List<Utente>} contenente tutti gli utenti che corrispondono al cognome inserito.
- * Restituisce una lista vuota se nessun utente corrisponde ai criteri di ricerca.
- *
- * @pre Il personale ha effettuato l'accesso al sistema.
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post La riga della tabella degli utenti ricercati appare evidenziata.
- */
-    public List<Utente> cercaUtentePerCognome(String cognome) {
-        throw new UnsupportedOperationException("Not supported yet.");
+  
+    public static Utente ottieniUtenteDaID(UUID uuid) {
+        for (Utente u : listaUtenti) {
+            if (u.getUUID().equals(uuid)) return u;
+        }
+        return null;
     }
 
-    /**
- * @brief Restituisce la lista completa degli utenti presenti nel sistema, ordinata per cognome e nome.
- *
- * Implementa l'ordinamento richiesto nel caso d'uso "Visualizzazione lista Utenti" (IF-10.1).
- *
- * @return Una {@code List<Utente>} contenente tutti gli utenti del sistema, ordinati alfabeticamente per cognome e nome.
- *
- * @pre Il personale ha effettuato l'accesso al sistema.
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Il personale visualizza la lista degli utenti in base all'ordine scelto.
- */
-    public List<Utente> ottieniUtentiOrdinatiPerCognomeNome() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static Libro ottieniLibroDaID(UUID uuid) {
+        for (Libro l : listaLibri) {
+            if (l.getUUID().equals(uuid)) return l;
+        }
+        return null;
     }
 
-    /**
- * @brief Restituisce la lista completa degli utenti presenti nel sistema, ordinata per matricola.
- *
- * Implementa l'ordinamento richiesto nel caso d'uso "Visualizzazione lista Utenti" (IF-10.2).
- *
- * @return Una {@code List<Utente>} contenente tutti gli utenti del sistema, ordinati in base alla matricola.
- *
- * @pre Il personale ha effettuato l'accesso al sistema.
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Il personale visualizza la lista degli utenti in base all'ordine scelto.
- */
-    
-    public List<Utente> ottieniUtentiOrdinatiPerMatricola() {
-        throw new UnsupportedOperationException("Not supported yet.");
+   
+    public static boolean aggiungiLibro(Libro l) throws LibroGiaEsistenteException {
+        if (getListaLibri().contains(l)) {
+            throw new LibroGiaEsistenteException("E' già presente un libro con ISBN" + l.ISBNProperty().get());
+        }
+        boolean b = listaLibri.add(l);
+        Archivio.scrivi(listaLibri, Archivio.fileLibri);
+        return b;
     }
 
-    /**
- * @brief Registra un nuovo prestito nel sistema per un libro e un utente specifici, dopo aver effettuato i controlli di validità.
- *
- * Questo metodo implementa il flusso principale del caso d'uso "Registrazione Prestito",
- *
- * @param libro L'oggetto Libro che viene prestato.
- * @param utente L'oggetto Utente a cui viene effettuato il prestito.
- * @param dataInizio La data effettiva di inizio del prestito.
- * @param dataRestitPrevista La data prevista per la restituzione (IF-6.2).
- *
- * @return La data di inizio prestito, come conferma dell'avvenuta registrazione.
- *
- * @pre L'utente e il libro devono essere già registrati nell'archivio.
- * @pre Il libro deve avere copie disponibili (IF-6.4).
- * @pre L'utente non deve avere più di 3 prestiti contemporaneamente (IF-6.5).
- * @pre L'utente non deve avere consegne in ritardo (IF-6.6).
- * @pre L'utente non deve essere sospeso (IF-6.7).
- * @pre Il personale ha effettuato l'accesso al sistema e visualizza il menu (UI-4).
- *
- * @post Il prestito è registrato con data di inizio e di restituzione prevista.
- * @post Il numero di copie disponibili del libro è decrementato.
- * @post Il numero di prestiti dell'utente è incrementato.
- */
-    public LocalDate registraPrestito(Libro libro, Utente utente, LocalDate dataInizio, LocalDate dataRestitPrevista) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static boolean rimuoviLibro(Libro l) throws LibroInPrestitoException {
+        if (l.getNumeroCopieTotali() != l.getNumeroCopieDisponibili()) {
+            int prestiti = l.getNumeroCopieTotali() - l.getNumeroCopieDisponibili();
+            throw new LibroInPrestitoException("Impossibile rimuovere " + l.getTitolo() + "\n" + (prestiti) + " copi" + (prestiti == 1 ? "a è" : "e sono") + " ancora in prestito.");
+        }
+        boolean b = listaLibri.remove(l);
+        Archivio.scrivi(listaLibri, Archivio.fileLibri);
+        return b;
     }
 
-    /**
- * @brief Registra la restituzione di un prestito, aggiornando il catalogo.
- *
- * Questo metodo implementa il flusso principale del caso d'uso "Registrazione Restituzione".
- *
- * @param prestito L'oggetto {@link Prestito} relativo al libro restituito.
- * @param dataRestituzione La data effettiva in cui il prestito viene restituito.
- *
- * @return La data di restituzione registrata, come conferma dell'avvenuta operazione.
- *
- * @pre Il personale ha effettuato l'accesso al sistema.
- * @pre Il libro deve essere registrato come prestito in precedenza.
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Il prestito relativo al libro restituito non compare più nell'elenco dei prestiti attivi.
- * @post Il numero di copie disponibili del libro è incrementato.
- * @post Il numero di prestiti dell'utente è decrementato.
- */
-    public LocalDate registraRestituzione(Prestito prestito, LocalDate dataRestituzione) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static ObservableList<Libro> ordinaLibriTitolo(ObservableList<Libro> lista) {
+        ObservableList<Libro> copia = FXCollections.observableArrayList(lista);
+        FXCollections.sort(copia, Comparator.comparing(l -> l.getTitolo().toLowerCase()));
+        return copia;
     }
 
-    /**
- * @brief Restituisce la lista di tutti i prestiti attivi, ordinata in base alla data di inizio del prestito.
- *
- * Implementa l'ordinamento richiesto nel caso d'uso "Visualizzazione lista prestiti" (IF-7.1).
- *
- * @return Una {@code List<Prestito>} contenente tutti i prestiti attivi, ordinati in base alla data di inizio (crescente).
- *
- * @pre Il personale ha effettuato l'accesso al sistema.
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Il personale visualizza a schermo la lista dei prestiti attivi secondo l'ordine selezionato.
- */
-    public List<Prestito> ottieniPrestitiOrdinatiPerDatalnizio() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static ObservableList<Libro> ordinaLibriAutore(ObservableList<Libro> lista) {
+        ObservableList<Libro> copia = FXCollections.observableArrayList(lista);
+        FXCollections.sort(copia, Comparator.comparing(Libro::getAutore));
+        return copia;
     }
 
-    /**
- * @brief Restituisce la lista di tutti i prestiti attivi, ordinata in base alla data di restituzione prevista.
- *
- * Implementa l'ordinamento richiesto nel caso d'uso "Visualizzazione lista prestiti" (IF-7.2).
- *
- * @return Una {@code List<Prestito>} contenente tutti i prestiti attivi, ordinati in base alla data di restituzione prevista (crescente).
- *
- * @pre Il personale ha effettuato l'accesso al sistema.
- * @pre Il personale visualizza l'interfaccia "Menu" (UI-4).
- *
- * @post Il personale visualizza a schermo la lista dei prestiti attivi secondo l'ordine selezionato.
- */
-    public List<Prestito> ottieniPrestitiOrdinatiPerDataRestituzione() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static ObservableList<Libro> ordinaLibriISBN(ObservableList<Libro> lista) {
+        ObservableList<Libro> copia = FXCollections.observableArrayList(lista);
+        FXCollections.sort(copia, Comparator.comparing(Libro::getISBN));
+        return copia;
     }
 
-    /**
- * @brief Salva lo stato corrente dell'intera biblioteca (libri, utenti, prestiti) su un file di archivio.
- *
- * Questo metodo serializza e persiste tutti i dati gestiti dal sistema in un file,
- * permettendone il recupero in sessioni successive.
- *
- * @pre Il sistema deve fornire tutti i dati per il salvataggio.
- *
- * @post I dati attuali della biblioteca (libri, utenti, prestiti) sono stati scritti sul file di archivio.
- */
-    public void salvaBiblioteca() {
+
+    public static ObservableList<Libro> cercaLibro(Libro libro) {
+        ObservableList<Libro> risultati = FXCollections.observableArrayList(listaLibri);
+        if (libro == null) return risultati;
+
+        Iterator<Libro> it = risultati.iterator();
+        while (it.hasNext()) {
+            Libro l = it.next();
+            String titoloRicerca = libro.getTitolo() != null ? libro.getTitolo() : "";
+            String autoreRicerca = libro.getAutore() != null ? libro.getAutore() : "";
+            String isbnRicerca = libro.getISBN() != null ? libro.getISBN() : "";
+
+            String titoloLibro = l.getTitolo() != null ? l.getTitolo() : "";
+            String autoreLibro = l.getAutore() != null ? l.getAutore() : "";
+            String isbnLibro = l.getISBN() != null ? l.getISBN() : "";
+
+            boolean titolo = titoloRicerca.isEmpty() || titoloLibro.toLowerCase().contains(titoloRicerca.toLowerCase());
+            boolean autore = autoreRicerca.isEmpty() || autoreLibro.toLowerCase().contains(autoreRicerca.toLowerCase());
+            boolean isbn = isbnRicerca.isEmpty() || isbnLibro.toLowerCase().contains(isbnRicerca.toLowerCase());
+            boolean copie = libro.getNumeroCopieDisponibili() == 0 || l.getNumeroCopieDisponibili() == libro.getNumeroCopieDisponibili();
+            boolean anno = libro.getAnnoPubblicazione() == 0 || l.getAnnoPubblicazione() == libro.getAnnoPubblicazione();
+
+            if (!(titolo && autore && isbn && copie && anno)) it.remove();
+        }
+        return risultati;
     }
-    /**
- * @brief Carica lo stato precedente della biblioteca da un file di archivio.
- *
- * Questo metodo deserializza i dati contenuti nel file di archivio e inizializza il sistema
- * (libri, utenti, prestiti) con lo stato salvato.
- *
- * @pre Il file deve contenere dati in un formato valido.
- *
- * @post Il catalogo dei libri, la lista degli utenti e la lista dei prestiti attivi sono stati caricati in memoria.
- */
-    public void caricaBiblioteca() {
+
+  
+    public static boolean aggiungiUtente(Utente u) {
+        if (u == null) {
+            return false;
+        }
+        if (listaUtenti.contains(u)) {
+            throw new UtenteGiaEsistenteException("E' già presente un utente con matricola " + u.getMatricola());
+        }
+        if (u == null) {
+            return false;
+        }
+        if (!trovaDaEmail(u.getEmail()).isEmpty()) {
+            throw new UtenteGiaEsistenteException("E' già presente un utente con e-mail " + u.getEmail());
+        }
+        boolean b = listaUtenti.add(u);
+
+        HashMap<String, String> sostituzioni = new HashMap<>();
+        sostituzioni.put("nome", u.getNome());
+        sostituzioni.put("cognome", u.getCognome());
+        sostituzioni.put("email", u.getEmail());
+        sostituzioni.put("matricola", u.getMatricola());
+        Runnable runnable = () -> {
+            try {
+                Email.mandaMailPagina(u.getEmail(), "Benvenuto!", "registrazione", sostituzioni);
+            } catch (MessagingException ignored) {
+            }
+        };
+        runnable.run();
+
+        Archivio.scrivi(listaUtenti, Archivio.fileUtenti);
+        return b;
+    }
+
+    public static boolean rimuoviUtente(Utente u) {
+        if (u.conteggioPrestiti() != 0) {
+            throw new UtenteHaPrestitiException("Non è possibile rimuovere" + u.getNome() + "" + u.getCognome() + " perchè ha " + u.conteggioPrestiti() + "prestit" + ((u.conteggioPrestiti()) == 1 ? "o" : "i") + " attiv" + ((u.conteggioPrestiti()) == 1 ? "o" : "i"));
+        }
+        boolean b = listaUtenti.remove(u);
+        Archivio.scrivi(listaUtenti, Archivio.fileUtenti);
+        return b;
+    }
+
+    public static ObservableList<Utente> trovaDaEmail(String email) {
+        return FXCollections.observableArrayList(
+                listaUtenti.stream().filter(u -> u.getEmail().equals(email)).collect(Collectors.toList()));
+    }
+
+    public static ObservableList<Utente> ordinaUtentiCognome(ObservableList<Utente> lista) {
+        ObservableList<Utente> copia = FXCollections.observableArrayList(lista);
+        FXCollections.sort(copia, Comparator.comparing(Utente::getCognome).thenComparing(Utente::getNome));
+        return copia;
+    }
+
+    public static ObservableList<Utente> ordinaUtentiNome(ObservableList<Utente> lista) {
+        ObservableList<Utente> copia = FXCollections.observableArrayList(lista);
+        FXCollections.sort(copia, Comparator.comparing(Utente::getNome).thenComparing(Utente::getCognome));
+        return copia;
+    }
+
+    public static ObservableList<Utente> ordinaUtentiMatricola(ObservableList<Utente> lista) {
+        ObservableList<Utente> copia = FXCollections.observableArrayList(lista);
+        FXCollections.sort(copia, Comparator.comparing(u -> u.getMatricola().toLowerCase()));
+        return copia;
+    }
+
+    public static ObservableList<Utente> cercaUtente(Utente utente) {
+        ObservableList<Utente> risultati = FXCollections.observableArrayList(listaUtenti);
+        if (utente == null) return risultati;
+
+        Iterator<Utente> it = risultati.iterator();
+        while (it.hasNext()) {
+            Utente u = it.next();
+            boolean matricola = utente.getMatricola().isEmpty() || u.getMatricola().toLowerCase().contains(utente.getMatricola().toLowerCase());
+            boolean nome = utente.getNome().isEmpty() || u.getNome().toLowerCase().contains(utente.getNome().toLowerCase());
+            boolean cognome = utente.getCognome().isEmpty() || u.getCognome().toLowerCase().contains(utente.getCognome().toLowerCase());
+            boolean email = utente.getEmail().isEmpty() || u.getEmail().toLowerCase().contains(utente.getEmail().toLowerCase());
+
+            if (!(matricola && nome && cognome && email)) it.remove();
+        }
+        return risultati;
+    }
+
+   
+    public static boolean aggiungiPrestito(Prestito p, boolean email) {
+        boolean b = listaPrestiti.add(p);
+        if (email) {
+            HashMap<String, String> sostituzioni = new HashMap<>();
+            sostituzioni.put("id", p.getUUID().toString());
+            sostituzioni.put("titolo", p.getLibro().getTitolo());
+            sostituzioni.put("di", p.getDataInizio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            sostituzioni.put("dr", p.getDataRestituzionePrevista().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            Runnable runnable = () -> {
+                try {
+                    Email.mandaMailPagina(p.getUtente().getEmail(), "Prestito registrato con successo!", "prestito", sostituzioni);
+                } catch (MessagingException ignored) {
+
+                }
+            };
+            runnable.run();
+        }
+
+        p.getLibro().decrementaCopieDisponibili();
+        Archivio.scrivi(listaLibri, Archivio.fileLibri);
+        Archivio.scrivi(listaPrestiti, Archivio.filePrestiti);
+        return b;
+    }
+
+    public static boolean rimuoviPrestito(Prestito p) {
+        p.getLibro().incrementaCopieDisponibili();
+        boolean b = listaPrestiti.remove(p);
+        Archivio.scrivi(listaLibri, Archivio.fileLibri);
+        Archivio.scrivi(listaPrestiti, Archivio.filePrestiti);
+        return b;
+    }
+
+    public static ObservableList<Prestito> ordinaPrestitiDataInizio(ObservableList<Prestito> lista) {
+        ObservableList<Prestito> copia = FXCollections.observableArrayList(lista);
+        FXCollections.sort(copia, Comparator.comparing(Prestito::getDataInizio));
+        return copia;
+    }
+
+    public static ObservableList<Prestito> ordinaPrestitiDataRestituzionePrevista(ObservableList<Prestito> lista) {
+        ObservableList<Prestito> copia = FXCollections.observableArrayList(lista);
+        FXCollections.sort(copia, Comparator.comparing(Prestito::getDataRestituzionePrevista));
+        return copia;
+    }
+
+    public static ObservableList<Prestito> ordinaPrestitiISBN(ObservableList<Prestito> lista) {
+        ObservableList<Prestito> copia = FXCollections.observableArrayList(lista);
+        FXCollections.sort(copia, Comparator.comparing(
+                p -> {
+                    Libro l = p.getLibro();
+                    return l != null ? l.getISBN().toLowerCase() : "";
+                }
+        ));
+        return copia;
+    }
+
+    public static ObservableList<Prestito> ordinaPrestitiMatricola(ObservableList<Prestito> lista) {
+        ObservableList<Prestito> copia = FXCollections.observableArrayList(lista);
+        FXCollections.sort(copia, Comparator.comparing(
+                p -> {
+                    Utente u = p.getUtente();
+                    return u != null ? u.getMatricola().toLowerCase() : "";
+                }
+        ));
+        return copia;
+    }
+
+
+    public static ObservableList<Prestito> cercaPrestito(Prestito prestito) {
+        ObservableList<Prestito> risultati = FXCollections.observableArrayList(listaPrestiti);
+        if (prestito == null) return risultati;
+
+        Iterator<Prestito> it = risultati.iterator();
+        while (it.hasNext()) {
+            Prestito p = it.next();
+            boolean libro = prestito.getLibro() == null || p.getLibro().equals(prestito.getLibro());
+            boolean utente = prestito.getUtente() == null || p.getUtente().equals(prestito.getUtente());
+            boolean dataInizio = prestito.getDataInizio() == null || p.getDataInizio().equals(prestito.getDataInizio());
+            boolean dataRest = prestito.getDataRestituzionePrevista() == null || p.getDataRestituzionePrevista().equals(prestito.getDataRestituzionePrevista());
+
+            if (!(libro && utente && dataInizio && dataRest)) it.remove();
+        }
+        return risultati;
     }
 }
