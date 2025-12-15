@@ -2,3 +2,5 @@
 /nbproject/
 /dataBiblioteca/
 .vscode
+.idea
+src/main/java/bibliotecauniversitaria/Launcher.java
