@@ -6,7 +6,7 @@
 package bibliotecauniversitaria.exceptions;
 
 public class LibroInPrestitoException extends RuntimeException {
-    public LibroInPrestitoException(String message){
+    public LibroInPrestitoException(String message) {
         super(message);
     }
 }

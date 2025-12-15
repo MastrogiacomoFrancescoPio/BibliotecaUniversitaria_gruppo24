@@ -6,7 +6,7 @@
 package bibliotecauniversitaria.exceptions;
 
 public class UtenteHaPrestitiException extends RuntimeException {
-    public UtenteHaPrestitiException(String message){
+    public UtenteHaPrestitiException(String message) {
         super(message);
     }
 }

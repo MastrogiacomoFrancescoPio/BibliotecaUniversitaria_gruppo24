@@ -7,7 +7,7 @@ package bibliotecauniversitaria.exceptions;
 
 
 public class UtenteGiaEsistenteException extends RuntimeException {
-    public UtenteGiaEsistenteException(String message){
+    public UtenteGiaEsistenteException(String message) {
         super(message);
     }
 }

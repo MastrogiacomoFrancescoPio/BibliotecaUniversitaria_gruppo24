@@ -10,7 +10,7 @@ package bibliotecauniversitaria.exceptions;
  * @author franc
  */
 public class LibroGiaEsistenteException extends RuntimeException {
-    public LibroGiaEsistenteException(String message){
+    public LibroGiaEsistenteException(String message) {
         super(message);
     }
 }

@@ -1,12 +1,6 @@
 package bibliotecauniversitaria.models;
 
 
-import java.io.*;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
-
-
 import bibliotecauniversitaria.exceptions.LibroGiaEsistenteException;
 import bibliotecauniversitaria.exceptions.LibroInPrestitoException;
 import bibliotecauniversitaria.exceptions.UtenteGiaEsistenteException;
@@ -18,6 +12,14 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
+import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @class Biblioteca
@@ -33,63 +35,63 @@ public class Biblioteca implements Serializable {
 
     public static Configurazione configurazione;
 
- /**
-     * @brief Restituisce l'oggetto di configurazione globale.
+    /**
      * @return L'istanza corrente di Configurazione.
+     * @brief Restituisce l'oggetto di configurazione globale.
      */
     public Configurazione getConfigurazione() {
         return configurazione;
     }
 
     /**
-     * @brief Restituisce la lista osservabile dei libri.
      * @return ObservableList contenente oggetti Libro.
+     * @brief Restituisce la lista osservabile dei libri.
      */
     public static ObservableList<Libro> getListaLibri() {
         return listaLibri;
     }
 
     /**
-     * @brief Imposta la lista dei libri.
      * @param listaLibri La nuova lista di libri.
+     * @brief Imposta la lista dei libri.
      */
     public static void setListaLibri(ObservableList<Libro> listaLibri) {
         Biblioteca.listaLibri = listaLibri;
     }
 
-     /**
-     * @brief Restituisce la lista osservabile degli utenti.
+    /**
      * @return ObservableList contenente oggetti Utente.
+     * @brief Restituisce la lista osservabile degli utenti.
      */
     public static ObservableList<Utente> getListaUtenti() {
         return listaUtenti;
     }
 
     /**
-     * @brief Imposta la lista degli utenti.
      * @param listaUtenti La nuova lista di utenti.
+     * @brief Imposta la lista degli utenti.
      */
     public static void setListaUtenti(ObservableList<Utente> listaUtenti) {
         Biblioteca.listaUtenti = listaUtenti;
     }
 
     /**
-     * @brief Restituisce la lista osservabile dei prestiti.
      * @return ObservableList contenente oggetti Prestito.
+     * @brief Restituisce la lista osservabile dei prestiti.
      */
     public static ObservableList<Prestito> getListaPrestiti() {
         return listaPrestiti;
     }
 
     /**
-     * @brief Imposta la lista dei prestiti.
      * @param listaPrestiti La nuova lista di prestiti.
+     * @brief Imposta la lista dei prestiti.
      */
     public static void setListaPrestiti(ObservableList<Prestito> listaPrestiti) {
         Biblioteca.listaPrestiti = listaPrestiti;
     }
 
-    
+
     /**
      * @brief Carica tutti i dati della biblioteca dagli archivi su file.
      * Inizializza le liste (Libri, Utenti, Prestiti), carica la configurazione
@@ -116,7 +118,7 @@ public class Biblioteca implements Serializable {
         }
     }
 
-     /**
+    /**
      * @brief Aggiorna lo stato di sospensione di tutti gli utenti.
      * Verifica per ogni utente se la sospensione è scaduta e la revoca se necessario.
      * Salva le modifiche su file.
@@ -129,12 +131,11 @@ public class Biblioteca implements Serializable {
         Archivio.scrivi(listaUtenti, Archivio.fileUtenti);
     }
 
-  
-     /**
-     * @brief Cerca un utente tramite il suo UUID.
-     * 
+
+    /**
      * @param uuid L'identificativo univoco dell'utente.
      * @return L'oggetto Utente se trovato, altrimenti null.
+     * @brief Cerca un utente tramite il suo UUID.
      */
     public static Utente ottieniUtenteDaID(UUID uuid) {
         for (Utente u : listaUtenti) {
@@ -144,10 +145,9 @@ public class Biblioteca implements Serializable {
     }
 
     /**
-     * @brief Cerca un libro tramite il suo UUID.
-     * 
      * @param uuid L'identificativo univoco del libro.
      * @return L'oggetto Libro se trovato, altrimenti null.
+     * @brief Cerca un libro tramite il suo UUID.
      */
     public static Libro ottieniLibroDaID(UUID uuid) {
         for (Libro l : listaLibri) {
@@ -156,17 +156,17 @@ public class Biblioteca implements Serializable {
         return null;
     }
 
-   
+
     /**
-     * @brief Aggiunge un nuovo libro alla biblioteca.
-     * @pre Il libro non deve essere già presente nella lista (controllo su ISBN).
-     * @post Il libro viene aggiunto alla lista in memoria e salvato su file.
      * @param l L'oggetto Libro da aggiungere.
      * @return true se l'operazione ha successo.
      * @throws LibroGiaEsistenteException Se esiste già un libro con lo stesso ISBN.
+     * @brief Aggiunge un nuovo libro alla biblioteca.
+     * @pre Il libro non deve essere già presente nella lista (controllo su ISBN).
+     * @post Il libro viene aggiunto alla lista in memoria e salvato su file.
      */
     public static boolean aggiungiLibro(Libro l) throws LibroGiaEsistenteException {
-        if(getListaLibri().contains(l)){
+        if (getListaLibri().contains(l)) {
             throw new LibroGiaEsistenteException("Un libro con lo stesso ISBN gia esiste.");
         }
         boolean b = listaLibri.add(l);
@@ -175,12 +175,12 @@ public class Biblioteca implements Serializable {
     }
 
     /**
-     * @brief Rimuove un libro dalla biblioteca.
-     * @pre Il libro non deve avere copie attualmente in prestito.
-     * @post Il libro viene rimosso dalla lista e il file aggiornato.
      * @param l Il libro da rimuovere.
      * @return true se l'operazione ha successo.
      * @throws LibroInPrestitoException Se ci sono ancora copie in prestito (totali != disponibili).
+     * @brief Rimuove un libro dalla biblioteca.
+     * @pre Il libro non deve avere copie attualmente in prestito.
+     * @post Il libro viene rimosso dalla lista e il file aggiornato.
      */
     public static boolean rimuoviLibro(Libro l) throws LibroInPrestitoException {
         if (l.getNumeroCopieTotali() != l.getNumeroCopieDisponibili()) {
@@ -192,10 +192,10 @@ public class Biblioteca implements Serializable {
         return b;
     }
 
-     /**
-     * @brief Restituisce una copia della lista libri ordinata per titolo.
+    /**
      * @param lista La lista di libri da ordinare.
      * @return Una nuova ObservableList ordinata alfabeticamente per titolo.
+     * @brief Restituisce una copia della lista libri ordinata per titolo.
      */
     public static ObservableList<Libro> ordinaLibriTitolo(ObservableList<Libro> lista) {
         ObservableList<Libro> copia = FXCollections.observableArrayList(lista);
@@ -203,10 +203,10 @@ public class Biblioteca implements Serializable {
         return copia;
     }
 
-     /**
-     * @brief Restituisce una copia della lista libri ordinata per autore.
+    /**
      * @param lista La lista di libri da ordinare.
      * @return Una nuova ObservableList ordinata alfabeticamente per autore.
+     * @brief Restituisce una copia della lista libri ordinata per autore.
      */
     public static ObservableList<Libro> ordinaLibriAutore(ObservableList<Libro> lista) {
         ObservableList<Libro> copia = FXCollections.observableArrayList(lista);
@@ -215,9 +215,9 @@ public class Biblioteca implements Serializable {
     }
 
     /**
-     * @brief Restituisce una copia della lista libri ordinata per ISBN.
      * @param lista La lista di libri da ordinare.
      * @return Una nuova ObservableList ordinata per codice ISBN.
+     * @brief Restituisce una copia della lista libri ordinata per ISBN.
      */
     public static ObservableList<Libro> ordinaLibriISBN(ObservableList<Libro> lista) {
         ObservableList<Libro> copia = FXCollections.observableArrayList(lista);
@@ -226,11 +226,11 @@ public class Biblioteca implements Serializable {
     }
 
     /**
+     * @param libro Un oggetto Libro contenente i termini di ricerca.
+     * @return Una ObservableList contenente i libri che soddisfano i criteri.
      * @brief Cerca libri che corrispondono ai criteri specificati.
      * Filtra la lista dei libri in base ai campi non nulli/non vuoti dell'oggetto libro passato come filtro.
      * I criteri (Titolo, Autore, ISBN) vengono combinati in AND.
-     * @param libro Un oggetto Libro contenente i termini di ricerca.
-     * @return Una ObservableList contenente i libri che soddisfano i criteri.
      */
     public static ObservableList<Libro> cercaLibro(Libro libro) {
         ObservableList<Libro> risultati = FXCollections.observableArrayList(listaLibri);
@@ -258,14 +258,14 @@ public class Biblioteca implements Serializable {
         return risultati;
     }
 
-  /**
+    /**
+     * @param u L'utente da registrare.
+     * @return true se l'aggiunta ha successo, false se l'oggetto è null.
+     * @throws UtenteGiaEsistenteException Se matricola o email sono duplicati.
      * @brief Aggiunge un nuovo utente al sistema.
      * Verifica l'univocità della matricola e dell'email. Invia un'email di benvenuto.
      * @pre L'utente non deve esistere (matricola e email uniche).
      * @post Utente aggiunto, email inviata e dati salvati su disco.
-     * @param u L'utente da registrare.
-     * @return true se l'aggiunta ha successo, false se l'oggetto è null.
-     * @throws UtenteGiaEsistenteException Se matricola o email sono duplicati.
      */
     public static boolean aggiungiUtente(Utente u) {
         if (u == null) {
@@ -296,12 +296,12 @@ public class Biblioteca implements Serializable {
     }
 
     /**
-     * @brief Rimuove un utente dal sistema.
-     * @pre L'utente non deve avere prestiti attivi.
-     * @post Utente rimosso e dati salvati.
      * @param u L'utente da rimuovere.
      * @return true se rimosso con successo.
      * @throws UtenteHaPrestitiException Se l'utente ha ancora libri in prestito.
+     * @brief Rimuove un utente dal sistema.
+     * @pre L'utente non deve avere prestiti attivi.
+     * @post Utente rimosso e dati salvati.
      */
     public static boolean rimuoviUtente(Utente u) {
         if (u.conteggioPrestiti() != 0) {
@@ -312,20 +312,20 @@ public class Biblioteca implements Serializable {
         return b;
     }
 
-     /**
-     * @brief Cerca utenti tramite indirizzo email.
+    /**
      * @param email L'indirizzo email da cercare (corrispondenza esatta).
      * @return ObservableList contenente gli utenti trovati.
+     * @brief Cerca utenti tramite indirizzo email.
      */
     public static ObservableList<Utente> trovaDaEmail(String email) {
         return FXCollections.observableArrayList(
                 listaUtenti.stream().filter(u -> u.getEmail().equals(email)).collect(Collectors.toList()));
     }
 
-     /**
-     * @brief Ordina una lista di utenti per Cognome (e poi Nome).
+    /**
      * @param lista La lista di utenti.
      * @return Nuova lista ordinata.
+     * @brief Ordina una lista di utenti per Cognome (e poi Nome).
      */
     public static ObservableList<Utente> ordinaUtentiCognome(ObservableList<Utente> lista) {
         ObservableList<Utente> copia = FXCollections.observableArrayList(lista);
@@ -333,10 +333,10 @@ public class Biblioteca implements Serializable {
         return copia;
     }
 
-     /**
-     * @brief Ordina una lista di utenti per Nome (e poi Cognome).
+    /**
      * @param lista La lista di utenti.
      * @return Nuova lista ordinata.
+     * @brief Ordina una lista di utenti per Nome (e poi Cognome).
      */
     public static ObservableList<Utente> ordinaUtentiNome(ObservableList<Utente> lista) {
         ObservableList<Utente> copia = FXCollections.observableArrayList(lista);
@@ -344,10 +344,10 @@ public class Biblioteca implements Serializable {
         return copia;
     }
 
-     /**
-     * @brief Ordina una lista di utenti per Matricola.
+    /**
      * @param lista La lista di utenti.
      * @return Nuova lista ordinata.
+     * @brief Ordina una lista di utenti per Matricola.
      */
     public static ObservableList<Utente> ordinaUtentiMatricola(ObservableList<Utente> lista) {
         ObservableList<Utente> copia = FXCollections.observableArrayList(lista);
@@ -356,10 +356,10 @@ public class Biblioteca implements Serializable {
     }
 
     /**
-     * @brief Cerca utenti in base a criteri parziali.
-     * Filtra la lista utenti controllando matricola, nome, cognome ed email (match parziale case-insensitive).
      * @param utente Oggetto "dummy" contenente i campi da usare come filtro.
      * @return ObservableList con gli utenti che corrispondono ai criteri.
+     * @brief Cerca utenti in base a criteri parziali.
+     * Filtra la lista utenti controllando matricola, nome, cognome ed email (match parziale case-insensitive).
      */
     public static ObservableList<Utente> cercaUtente(Utente utente) {
         ObservableList<Utente> risultati = FXCollections.observableArrayList(listaUtenti);
@@ -379,13 +379,13 @@ public class Biblioteca implements Serializable {
     }
 
     /**
+     * @param p     Il prestito da registrare.
+     * @param email true per inviare email di conferma all'utente.
+     * @return true se l'operazione ha successo.
      * @brief Registra un nuovo prestito.
      * Aggiunge il prestito alla lista, decrementa le copie disponibili del libro,
      * invia una mail di conferma (opzionale) e salva tutto su file.
      * @post Prestito creato, copie libro decrementate.
-     * @param p Il prestito da registrare.
-     * @param email true per inviare email di conferma all'utente.
-     * @return true se l'operazione ha successo.
      */
     public static boolean aggiungiPrestito(Prestito p, boolean email) {
         boolean b = listaPrestiti.add(p);
@@ -412,11 +412,11 @@ public class Biblioteca implements Serializable {
     }
 
     /**
+     * @param p Il prestito da rimuovere.
+     * @return true se rimosso con successo.
      * @brief Rimuove (chiude) un prestito esistente.
      * Rimuove il prestito dalla lista attiva e incrementa le copie disponibili del libro restituito.
      * @post Prestito rimosso, copie libro incrementate.
-     * @param p Il prestito da rimuovere.
-     * @return true se rimosso con successo.
      */
     public static boolean rimuoviPrestito(Prestito p) {
         p.getLibro().incrementaCopieDisponibili();
@@ -426,10 +426,10 @@ public class Biblioteca implements Serializable {
         return b;
     }
 
-     /**
-     * @brief Ordina i prestiti per data di inizio.
+    /**
      * @param lista La lista di prestiti.
      * @return Nuova lista ordinata cronologicamente.
+     * @brief Ordina i prestiti per data di inizio.
      */
     public static ObservableList<Prestito> ordinaPrestitiDataInizio(ObservableList<Prestito> lista) {
         ObservableList<Prestito> copia = FXCollections.observableArrayList(lista);
@@ -437,10 +437,10 @@ public class Biblioteca implements Serializable {
         return copia;
     }
 
-     /**
-     * @brief Ordina i prestiti per data di restituzione prevista.
+    /**
      * @param lista La lista di prestiti.
      * @return Nuova lista ordinata per scadenza.
+     * @brief Ordina i prestiti per data di restituzione prevista.
      */
     public static ObservableList<Prestito> ordinaPrestitiDataRestituzionePrevista(ObservableList<Prestito> lista) {
         ObservableList<Prestito> copia = FXCollections.observableArrayList(lista);
@@ -448,10 +448,10 @@ public class Biblioteca implements Serializable {
         return copia;
     }
 
-     /**
-     * @brief Ordina i prestiti per ISBN del libro associato.
+    /**
      * @param lista La lista di prestiti.
      * @return Nuova lista ordinata.
+     * @brief Ordina i prestiti per ISBN del libro associato.
      */
     public static ObservableList<Prestito> ordinaPrestitiISBN(ObservableList<Prestito> lista) {
         ObservableList<Prestito> copia = FXCollections.observableArrayList(lista);
@@ -464,10 +464,10 @@ public class Biblioteca implements Serializable {
         return copia;
     }
 
-     /**
-     * @brief Ordina i prestiti per Matricola dell'utente associato.
+    /**
      * @param lista La lista di prestiti.
      * @return Nuova lista ordinata.
+     * @brief Ordina i prestiti per Matricola dell'utente associato.
      */
     public static ObservableList<Prestito> ordinaPrestitiMatricola(ObservableList<Prestito> lista) {
         ObservableList<Prestito> copia = FXCollections.observableArrayList(lista);
@@ -480,11 +480,11 @@ public class Biblioteca implements Serializable {
         return copia;
     }
 
- /**
-     * @brief Cerca prestiti in base a criteri specifici.
-     * Filtra la lista controllando corrispondenze esatte su Libro, Utente o date.
+    /**
      * @param prestito Oggetto contenente i criteri di ricerca.
      * @return ObservableList con i prestiti trovati.
+     * @brief Cerca prestiti in base a criteri specifici.
+     * Filtra la lista controllando corrispondenze esatte su Libro, Utente o date.
      */
     public static ObservableList<Prestito> cercaPrestito(Prestito prestito) {
         ObservableList<Prestito> risultati = FXCollections.observableArrayList(listaPrestiti);
