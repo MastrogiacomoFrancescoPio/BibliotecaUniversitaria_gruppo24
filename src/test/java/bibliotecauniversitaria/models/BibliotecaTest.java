@@ -365,7 +365,7 @@ public class BibliotecaTest {
      * Test of cercaLibro method, of class Biblioteca.
      */
     @Test
-    public void testCercaLibro() {
+    public void testCercaLibro_Titolo() {
         System.out.println("testCercaLibro: Filtro Titolo");
 
         Libro libro1_match = new Libro("Harry Potter - Pietra Filosofale", "", "", 1, 1);
@@ -383,8 +383,18 @@ public class BibliotecaTest {
         assertTrue(risultati.stream().anyMatch(u -> u.getTitolo().equals("Harry Potter - Pietra Filosofale")), "Deve contenere il primo libro di Harry Potter.");
         assertTrue(risultati.stream().anyMatch(u -> u.getTitolo().equals("Harry Potter - Camera dei Segreti")), "Deve contenere il secondo libro di Harry Potter.");
         assertFalse(risultati.stream().anyMatch(u -> u.getTitolo().equals("Il Signore degli Anelli")), "NON deve contenere Il Signore degli Anelli.");
+    }
 
+    @Test
+    public void testCercaLibro_Autore() {
+        Libro l1_r = new Libro("Java Tutorial #1","Peppe","",1,1);
+        Libro l2_dummy = new Libro("Java Tutorial #2","Giggino","",1,1);
+        Libro l1_s = new Libro("","Peppe","",0,0);
 
+        Biblioteca.setListaLibri(FXCollections.observableArrayList(l1_r,l2_dummy));
+        ObservableList<Libro> trovati = Biblioteca.cercaLibro(l1_s);
+        assertEquals(l1_r.getUUID(), trovati.get(0).getUUID());
+        assertEquals(1, trovati.size());
     }
 
     @Test

@@ -96,8 +96,13 @@ import javafx.util.converter.IntegerStringConverter;
         });
         
         colonnaISBN.setOnEditCommit(e -> {
-            e.getRowValue().setISBN(e.getNewValue());
-            Archivio.scrivi(tabellaLibri.getItems(), Archivio.fileLibri);
+           try {
+               e.getRowValue().setISBN(e.getNewValue());
+           } catch (LibroGiaEsistenteException ex) {
+               new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
+           }
+           tabellaLibri.refresh();
+           Archivio.scrivi(tabellaLibri.getItems(), Archivio.fileLibri);
         });
         
         colonnaCopie.setOnEditCommit(e -> {

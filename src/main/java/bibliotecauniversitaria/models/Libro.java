@@ -8,6 +8,7 @@ import java.time.Year;
 import java.util.Objects;
 import java.util.UUID;
 
+import bibliotecauniversitaria.exceptions.LibroGiaEsistenteException;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -112,7 +113,11 @@ public class Libro implements Serializable {
      * @param ISBN Il nuovo codice ISBN.
      */
     public void setISBN(String ISBN) {
-        this.ISBN.set(ISBN);
+        if(!Biblioteca.getListaLibri().stream().anyMatch(l->l.getISBN().equals(ISBN))) {
+            this.ISBN.set(ISBN);
+        } else {
+            throw new LibroGiaEsistenteException("Un libro con questo ISBN già esiste.");
+        }
     }
 
      /**
