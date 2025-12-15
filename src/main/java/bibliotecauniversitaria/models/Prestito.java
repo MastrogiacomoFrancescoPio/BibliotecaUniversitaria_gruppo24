@@ -1,57 +1,106 @@
 package bibliotecauniversitaria.models;
 
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
-public class Prestito {
+public class Prestito implements Serializable {
 
-    private Libro libro;
+    /* =========================
+       CAMPi
+       ========================= */
+    private UUID libro;
+    private UUID utente;
 
-    private Utente utente;
+    private transient ObjectProperty<LocalDate> dataInizio;
+    private transient ObjectProperty<LocalDate> dataRestituzionePrevista;
 
-    private LocalDate dataInizio;
+    private transient UUID uuid = UUID.randomUUID();
 
-    private LocalDate dataRestPrevista;
-
-    private LocalDate dataRestituzione;
-
-    /**
- * @brief Verifica se la data di restituzione effettiva di un prestito supera la data prevista di più di due settimane.
- *
- * Implementa il controllo di validità per il ritardo superiore a 2 settimane (IF-8.2)
- * come parte del processo di registrazione della restituzione, che porta all'aggiunta di una segnalazione
- * all'Utente che ha effettuato la restituzione in ritardo
- *
- * @return {@code true} se il ritardo supera le due settimane; {@code false} altrimenti.
- *
- * @pre La restituzione del libro è avvenuta.
- * @pre La data di restituzione prevista e la data di restituzione effettiva non coincidono.
- *
- * @post Il sistema ha verificato la presenza di un ritardo.
- */
-    public boolean verificaRitardoMaggioreDueSettimane() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /* =========================
+       COSTRUTTORE
+       ========================= */
+    public Prestito(UUID libro, UUID utente, LocalDate dataInizio, LocalDate dataRestituzionePrevista) {
+        this.libro = libro;
+        this.utente = utente;
+        this.dataInizio = new SimpleObjectProperty<>(dataInizio);
+        this.dataRestituzionePrevista = new SimpleObjectProperty<>(dataRestituzionePrevista);
     }
 
-    /**
- * @brief Verifica se la data di restituzione effettiva di un prestito supera la data prevista di più di tre settimane.
- *
- * Implementa il controllo di validità per il ritardo superiore a 3 settimane (IF-8.3),
- * che porta alla sospensione automatica dell'utente nel caso d'uso "Registrazione Restituzione".
- *
- * @return {@code true} se il ritardo supera le tre settimane; {@code false} altrimenti.
- *
- * @pre La restituzione del prestito è avvenuta.
- * @pre Il sistema ha già verificato l'eventuale ritardo di due settimane.
- *
- * @post Il sistema ha verificato la presenza di un ritardo.
- */
-    public boolean verificaRitardoMaggioreTreSettimane() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Libro getLibro() {
+        return Biblioteca.ottieniLibroDaID(libro);
     }
 
-    @Override
-    public String toString() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setLibro(UUID libro) {
+        this.libro = libro;
+    }
+
+    public UUID getUUID() {
+        return uuid;
+    }
+
+    public Utente getUtente() {
+        return Biblioteca.ottieniUtenteDaID(utente);
+    }
+
+    public void setUtente(UUID utente) {
+        this.utente = utente;
+    }
+
+    public LocalDate getDataInizio() {
+        return dataInizio.get();
+    }
+
+    public void setDataInizio(LocalDate dataInizio) {
+        this.dataInizio.set(dataInizio);
+    }
+
+    public ObjectProperty<LocalDate> dataInizioProperty() {
+        return dataInizio;
+    }
+
+    public LocalDate getDataRestituzionePrevista() {
+        return dataRestituzionePrevista.get();
+    }
+
+    public void setDataRestituzionePrevista(LocalDate dataRestituzionePrevista) {
+        this.dataRestituzionePrevista.set(dataRestituzionePrevista);
+    }
+
+    public ObjectProperty<LocalDate> dataRestituzionePrevistaProperty() {
+        return dataRestituzionePrevista;
+    }
+
+    public int calcolaRitardo(LocalDate data) {
+        return (int) ChronoUnit.DAYS.between(getDataRestituzionePrevista(), data);
+    }
+
+    public boolean verificaRitardo(int giorni) {
+        return calcolaRitardo(LocalDate.now()) > giorni;
+    }
+
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+        oos.writeUTF(uuid.toString());
+        oos.writeObject(dataInizio.get());
+        oos.writeObject(dataRestituzionePrevista.get());
+    }
+
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        this.uuid = UUID.fromString(ois.readUTF());
+
+        LocalDate dataInizioVal = (LocalDate) ois.readObject();
+        LocalDate dataRestituzioneVal = (LocalDate) ois.readObject();
+
+        this.dataInizio = new SimpleObjectProperty<>(dataInizioVal);
+        this.dataRestituzionePrevista = new SimpleObjectProperty<>(dataRestituzioneVal);
     }
 }
