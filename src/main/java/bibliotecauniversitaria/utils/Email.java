@@ -21,11 +21,23 @@ public class Email {
     public static String mail = "";
     public static String password = "";
     public static Boolean tls = false;
-    
+     
+    /**
+     * @brief Verifica se una stringa rappresenta un indirizzo email valido.
+     * Utilizza una Regular Expression (Regex) per controllare il formato.
+     * @param email La stringa da validare.
+     * @return true se il formato è valido (es. test@example.com), false altrimenti.
+     */
     public static boolean isValida(String email){
         return email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]+$");
     }
-
+    
+    /**
+     * @brief Carica la configurazione SMTP dalle impostazioni globali.
+     * Legge host, porta, username, password e flag TLS dalla classe Biblioteca.configurazione.
+     * @pre La configurazione globale deve essere stata inizializzata.
+     * @post Le variabili statiche della classe vengono popolate con i dati di connessione.
+     */
     public static void carica() {
         host = Biblioteca.configurazione.get("SMTP_HOST");
         port = Integer.parseInt(Biblioteca.configurazione.get("SMTP_PORT"));
@@ -34,11 +46,27 @@ public class Email {
         password = Biblioteca.configurazione.get("SMTP_PASSWORD");
         tls = Biblioteca.configurazione.get("SMTP_TLS").equalsIgnoreCase("true");
     }
-
+    
+    /**
+     * @brief Controlla se il servizio email è abilitato nella configurazione.
+     * @return true se la chiave "SMTP_CONFIGURATO" è impostata su "true", false altrimenti.
+     */
     public static boolean isConfigurato() {
         return Biblioteca.configurazione.get("SMTP_CONFIGURATO").equals("true");
     }
-
+    
+    /**
+     * @brief Invia una email formattata utilizzando un template HTML.
+     * Carica un file HTML dalle risorse, sostituisce i placeholder {chiave} con i valori
+     * forniti nella mappa e invia il messaggio.
+     * @pre Il servizio email deve essere configurato (isConfigurato() == true).
+     * @pre Il file HTML specificato deve esistere nella cartella delle risorse "html/".
+     * @param mail L'indirizzo email del destinatario.
+     * @param soggetto L'oggetto dell'email.
+     * @param nomeDelHtml Il nome del file template (senza estensione .html).
+     * @param chiavi Mappa contenente le coppie chiave-valore per le sostituzioni nel template.
+     * @throws MessagingException Se si verifica un errore durante l'invio (es. credenziali errate).
+     */
     public static void mandaMailPagina(String mail, String soggetto, String nomeDelHtml, HashMap<String, String> chiavi) throws MessagingException {
                 if(!isConfigurato()) return;
         try (InputStream in = Main.class.getResourceAsStream("html/"+nomeDelHtml+".html")) {
@@ -65,7 +93,16 @@ public class Email {
             throw e;
         }
     }
-
+    
+    /**
+     * @brief Metodo di basso livello per l'invio dell'email tramite SMTP.
+     * Configura la sessione JavaMail, crea l'autenticatore e spedisce il messaggio MIME.
+     * @pre Il servizio email deve essere configurato.
+     * @param rec Oggetto InternetAddress del destinatario.
+     * @param soggetto Oggetto dell'email.
+     * @param body Corpo dell'email in formato HTML.
+     * @throws MessagingException In caso di fallimento della connessione o dell'invio.
+     */
     public static void mandaMail(InternetAddress rec, String soggetto, String body)
             throws MessagingException {
         if(!isConfigurato()) return;
@@ -97,6 +134,12 @@ public class Email {
         Transport.send(message);
     }
     
+    /**
+     * @brief Genera un codice numerico casuale e lo invia via email per il reset della password.
+     * Crea un codice a 6 cifre utilizzando SecureRandom e utilizza il template "reset" per l'invio.
+     * @param mail L'indirizzo email a cui inviare il codice.
+     * @return Una stringa contenente il codice generato (es. "123456"). Restituisce stringa vuota in caso di errore.
+     */
     public static String mandaReset(String mail) {
         SecureRandom sr = new SecureRandom();
         String codice = "";
@@ -114,10 +157,13 @@ public class Email {
         }
         return codice;
     }
-
+    
+    /**
+     * @brief Restituisce una rappresentazione testuale della configurazione SMTP corrente.
+     * Utile per scopi di debug per verificare host, porta e utente configurati.
+     * @return Stringa formattata con i dettagli di connessione.
+     */
     public static String aStringa() {
         return host + ":" + port + " (" + mail + ":" + password + ") [TLS: " + tls + "]";
     }
-    
-    
 }
