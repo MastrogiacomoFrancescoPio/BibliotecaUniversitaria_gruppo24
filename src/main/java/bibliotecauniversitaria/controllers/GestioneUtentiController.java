@@ -1,15 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package bibliotecauniversitaria.controllers;
 
 import bibliotecauniversitaria.exceptions.UtenteGiaEsistenteException;
+import bibliotecauniversitaria.exceptions.UtenteHaPrestitiException;
 import bibliotecauniversitaria.models.Archivio;
 import bibliotecauniversitaria.models.Biblioteca;
 import bibliotecauniversitaria.models.Prestito;
 import bibliotecauniversitaria.models.Utente;
+import bibliotecauniversitaria.utils.Configurazione;
 import bibliotecauniversitaria.utils.StageHelper;
 
 import java.time.LocalDate;
@@ -29,8 +26,22 @@ import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
 /**
- *
- * @author ACER
+ * @brief Controller relativo alla gestione degli Utenti
+ * 
+ * Questa classe gestisce l'interfaccia grafica Gestutenti relativa all'amministrazione degli utenti registrati nell'archivio della biblioteca.
+ * Le funzionalità principali includono:
+ * - Visualizzazione tabellare e ordinamento (tramite nome, cognome o matricola).
+ * - Aggiunta di un utente all'archivio.
+ * - Rimozione di un utente dall'archivio
+ * - Modifica di determinati campi di un utente.
+ * - Ricerca di utenti in base a criteri selezionati.
+ * - Gestione della sospensione e della revoca di sospensione degli utenti.
+ * - Ritorno all'interfaccia "menu".
+ * 
+ * Nella gestione di queste funzionalità il controller utilizza i metodi dei model @ref Biblioteca e @ref Archivio
+ * 
+ * @see Gestutenti.fxml Interfaccia utente gestita da questo controller.
+ * @see menu.fxml Interfaccia di Menu.
  */
 public class GestioneUtentiController {
     @FXML
@@ -65,7 +76,19 @@ public class GestioneUtentiController {
     @FXML
     private TableColumn<Utente, LocalDate> colonnaFineSospensioni;
 
-
+    /**
+    * @brief Configura la tabella utenti e inizializza lo stato del controller.
+    * * Questo metodo viene chiamato automaticamente da JavaFX dopo il caricamento del file FXML.
+    * Le sue funzionalità principali includono:
+    * - Configurazione della tabella: associa le celle della @ref tabellaUtenti alle Properties degli attributi 
+    * della classe @ref Utente tramite PropertyValueFactory.
+    * - Editabilità: configura le celle affinchè i campi siano modificabili, includendo il salvataggio automatico 
+    * dei dati modificati sull'archivio (@ref Archivio).
+    * - Caricamento della tabella: imposta la @ref tabellaUtenti utilizzando la lista osservabile 
+    * (ObservableList) di utenti fornita dalla classe @ref Biblioteca.
+    * - Aggiornamento Sospensioni: richiama il metodo di @ref Biblioteca per aggiornare lo stato delle sospensioni degli utenti scadute.
+    * 
+    */
     @FXML
     public void initialize() {
         colonnaNome.setCellValueFactory(new PropertyValueFactory("nome"));
@@ -185,13 +208,38 @@ public class GestioneUtentiController {
         Biblioteca.togliSospensioni();
         tabellaUtenti.setItems(Biblioteca.getListaUtenti());
     }
-
+    
+    /**
+    * @brief Ritorno all'interfaccia "menu".
+    * Questo metodo viene chiamato al click del tasto "Torna al Menu" di Gestutenti.
+    * Utilizza la classe @ref StageHelper per effettuare un cambio dalla scena corrente 
+    * a quella di "Menu".
+    * 
+    * @see menu.fxml Interfaccia di Menu.
+    */
 
     @FXML
     public void onMenu() {
         StageHelper.switchToNew((Stage) nomeTxt.getScene().getWindow(), "menu", "Menu");
     }
-
+    
+    /**
+    * @brief Aggiunta di un utente in archivio.
+    * * Questo metodo viene chiamato al click del tasto "Aggiungi" di GestUtenti.
+    * Esso effettua una serie di controlli prima di procedere all'aggiunta dell'utente, 
+    * accertandosi che nessun campo sia vuoto e tutti siano stati riempiti tramite le apposite
+    * caselle di testo in GestUtenti. Procede poi all'aggiunta dell'utente in un blocco try, nel caso
+    * in cui si voglia inserire un utente la cui matricola o email è già presente in archivio sarà 
+    * lanciata un'eccezione di tipo @ref UtenteGiaEsistenteException con relativo alert. Nel caso in 
+    * cui l'utente da inserire presenti una mail non valida sarà lanciata una IllegalArgumentException 
+    * con relativo Alert. Per entrambi i tipi di eccezioni non si proseguirà con l'aggiunta dell'utente. 
+    * Il metodo infine si occupa di aggiornare tabellaUtenti con l'aggiornata listaUtenti di
+    * @ref Biblioteca, per poi in conclusione resettare i valori delle caselle di testo.
+    * 
+    * @throws UtenteGiaEsistenteException Se la matricola o l'email inserita è già presente nell'archivio.
+    * @throws IllegalArgumentException Se l'indirizzo email non rispetta il formato atteso.
+    *
+    */
     @FXML
     public void onAggiungi() {
         if (nomeTxt.getText().equals("")) {
@@ -225,6 +273,22 @@ public class GestioneUtentiController {
         emailTxt.clear();
 
     }
+    /**
+    * @brief Rimozione di un utente dall'archivio.
+    * * Questo metodo viene chiamato al click del tasto "Rimuovi" di GestUtenti.
+    *  Presenta diverse funzionalità:
+    * - Controlla se sia stato selezionato tramite click un utente dalla tabella, in caso contrario
+    *  mostra un Alert di tipo Warning.
+    * - Nel caso sia stato selezionato un utente, prima di procedere alla rimozione, viene visualizzato
+    * un Alert di tipo Confirm in cui si richiede la conferma per rimuovere l'utente. 
+    * - In caso di esito affermativo dell'Alert, verrà chiamato il metodo rimuoviUtente() di
+    * @ref Biblioteca all'interno di un blocco try. Nel caso in cui l'utente presenti prestiti attivi
+    * sarà lanciata un'eccezione di tipo @ref UtenteHaPrestitiException e non si procederà alla rimozione
+    * - Infine sarà impostata tabellaUtenti al valore aggiornato di listaUtenti.
+    * 
+    * @throws UtenteHaPrestitiException Se l'utente presenta prestiti attivi.
+    *
+    */
 
     @FXML
     public void onRimuovi() {
@@ -240,13 +304,25 @@ public class GestioneUtentiController {
         if (result.isPresent() && result.get() == ButtonType.YES) {
             try{
                 Biblioteca.rimuoviUtente(selezionato);
-            }catch(UtenteGiaEsistenteException e){
+            }catch(UtenteHaPrestitiException e){
                 new Alert(Alert.AlertType.ERROR, e.getMessage()).showAndWait();
             }
                 tabellaUtenti.setItems(Biblioteca.getListaUtenti());
         }
     }
 
+    /**
+    * @brief Ricerca di un utente nella tabella.
+    * * Questo metodo viene chiamato al click del tasto "Ricerca" di GestUtenti.
+    * Permette di visualizzare nella tabella esclusivamente gli utenti trovati
+    * secondo i criteri di ricerca inseriti nelle apposite caselle di testo. Per trovare
+    * la lista degli utenti corrispondenti ai criteri di ricerca viene richiamato il metodo 
+    * cercaUtente() di @ref Biblioteca. Se quest'ultimo restituisce una lista vuota verrà
+    * visualizzato un Alert e la tabella continuerà a mostrare tutti gli utenti dell'archivio.
+    * Se la lista restituita non è vuota, la @ref tabellaUtenti viene impostata su tale lista, 
+    * visualizzando di conseguenza i soli risultati filtrati.
+    *
+    */
     @FXML
     public void onRicerca() {
         ObservableList<Utente> utentiTrovati = Biblioteca.cercaUtente(new Utente(matricolaTxt.getText(), nomeTxt.getText(), cognomeTxt.getText(), emailTxt.getText()));
@@ -259,6 +335,22 @@ public class GestioneUtentiController {
         }
     }
     
+     /**
+    * @brief Sospensione/Revoca della sospensione di un utente.
+    * * Questo metodo viene chiamato al click del tasto "Sospendi" di GestUtenti.
+    *  Presenta diverse funzionalità:
+    * - Controlla se è stato selezionato tramite click un utente dalla tabella, in caso contrario
+    *  mostra un Alert di tipo Warning.
+    * - Nel caso sia stato selezionato un utente, prima di procedere alla sospensione/ revoca sospensione, viene visualizzato
+    * un Alert di tipo Confirm in cui si richiede la conferma per procedere. 
+    * - In caso di esito affermativo dell'Alert, viene effettuato un controllo sullo stato di sospensione 
+    * dell'utnete selezionato, nel caso non sia già sospeso verrà chiamato il metodo sospendiUtente() di
+    * @ref Biblioteca per un periodo GIORNI_SOSPENSIONE letto dal file configurazione e varrà settato il testo del pulsante a "SBLOCCA".
+    * Nel caso in cui l'utente presenti sia già sospeso verrà richiamato revocaSospensione() di @ref Biblioteca
+    * e varrà settato il testo del pulsante a "SOSPENDI".
+    * In entrambi i casi la tabella sarà aggiornta.
+    *
+    */
     @FXML
     public void onSospendi() {
         Utente selezionato = tabellaUtenti.getSelectionModel().getSelectedItem();
@@ -280,25 +372,49 @@ public class GestioneUtentiController {
             tabellaUtenti.refresh();
             Archivio.scrivi(Biblioteca.getListaUtenti(), Archivio.fileUtenti);
         } else {
-            selezionato.sospendi(30,true);
+            selezionato.sospendi(Biblioteca.configurazione.getNumero("GIORNI_SOSPENSIONE"),true);
             sospendiBtn.setText("SBLOCCA");
             tabellaUtenti.setItems(Biblioteca.getListaUtenti());
             tabellaUtenti.refresh();
             Archivio.scrivi(Biblioteca.getListaUtenti(), Archivio.fileUtenti);
         }
     }
-
-
+    
+    /**
+    * @brief Ordinamento degli utenti per cognome.
+    * Questo metodo viene chiamato al click dell'opzione "Cognome" del menù a tendina di GestUtenti.
+    * Permette la visualizzazione degli utenti nella tabella in ordine alfabetico per cognome e 
+    * a parità di cognome per nome. Richiama il metodo {@link Biblioteca#ordinaUtentiCognome(ObservableList) ordinaUtentiCognome()}) 
+    * di @ref Biblioteca, il quale crea un clone ordinato di listaUtenti.
+    * 
+    */
+    
     @FXML
     public void onOrdinaCognome() {
         tabellaUtenti.setItems(Biblioteca.ordinaUtentiCognome(tabellaUtenti.getItems()));
     }
 
+    /**
+    * @brief Ordinamento degli utenti per nome.
+    * Questo metodo viene chiamato al click dell'opzione "Nome" del menù a tendina di GestUtenti.
+    * Permette la visualizzazione degli utenti nella tabella in ordine alfabetico per nome e 
+    * a parità di nome per cognome. Richiama il metodo {@link Biblioteca#ordinaUtentiNome(ObservableList) ordinaUtentiNome()}) di @ref Biblioteca, 
+    * il quale crea un clone ordinato di listaUtenti.
+    * 
+    */
     @FXML
     public void onOrdinaNome() {
         tabellaUtenti.setItems(Biblioteca.ordinaUtentiNome(tabellaUtenti.getItems()));
     }
 
+    
+    /**
+    * @brief Ordinamento degli utenti per matricola.
+    * Questo metodo viene chiamato al click dell'opzione "Matricola" del menù a tendina di GestUtenti.
+    * Permette la visualizzazione degli utenti nella tabella in ordine di matricola. 
+    * Richiama il metodo {@link Biblioteca#ordinaUtentiMatricola(ObservableList) ordinaUtentiMatricola()} di @ref Biblioteca, il quale crea un clone ordinato di listaUtenti.
+    * 
+    */
     @FXML
     public void onOrdinaMatricola() {
         tabellaUtenti.setItems(Biblioteca.ordinaUtentiMatricola(tabellaUtenti.getItems()));
