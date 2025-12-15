@@ -115,9 +115,4 @@ public class Email {
         return codice;
     }
 
-    public static String aStringa() {
-        return host + ":" + port + " (" + mail + ":" + password + ") [TLS: " + tls + "]";
-    }
-    
-    
 }
