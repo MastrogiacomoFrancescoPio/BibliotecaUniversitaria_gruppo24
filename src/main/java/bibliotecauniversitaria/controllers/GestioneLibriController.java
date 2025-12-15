@@ -1,8 +1,11 @@
 package bibliotecauniversitaria.controllers;
 
+import bibliotecauniversitaria.exceptions.LibroGiaEsistenteException;
+import bibliotecauniversitaria.exceptions.LibroInPrestitoException;
 import bibliotecauniversitaria.models.Archivio;
 import bibliotecauniversitaria.models.Biblioteca;
 import bibliotecauniversitaria.models.Libro;
+import bibliotecauniversitaria.utils.StageHelper;
 import java.util.Optional;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,11 +19,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
-
-/**
- *
- * @author franc
- */
 
     public class GestioneLibriController {
     @FXML private TextField titoloTxt;

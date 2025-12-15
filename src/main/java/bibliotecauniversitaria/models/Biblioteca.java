@@ -18,7 +18,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
 
 public class Biblioteca implements Serializable {
 
