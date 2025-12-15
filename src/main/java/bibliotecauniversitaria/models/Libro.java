@@ -1,4 +1,4 @@
-package it.unisa.diem.ids.bibliotecauniversitaria;
+package bibliotecauniversitaria.models;
 
 public class Libro {
 

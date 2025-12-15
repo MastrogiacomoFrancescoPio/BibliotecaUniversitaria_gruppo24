@@ -1,4 +1,4 @@
-package it.unisa.diem.ids.bibliotecauniversitaria;
+package bibliotecauniversitaria.models;
 
 import java.time.LocalDate;
 import java.util.List;
