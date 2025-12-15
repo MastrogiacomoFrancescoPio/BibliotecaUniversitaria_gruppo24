@@ -245,7 +245,7 @@ import javafx.util.converter.IntegerStringConverter;
     */
     @FXML
     public void onRicerca() {
-        ObservableList<Libro> libriTrovati = Biblioteca.cercaLibro(new Libro(titoloTxt.getText(),autoreTxt.getText(),ISBNTxt.getText(),annoTxt.getText().equals("")?-1:Integer.parseInt(annoTxt.getText()),copieTxt.getText().equals("")?-1:Integer.parseInt(copieTxt.getText())));
+        ObservableList<Libro> libriTrovati = Biblioteca.cercaLibro(new Libro(titoloTxt.getText(),autoreTxt.getText(),ISBNTxt.getText(),annoTxt.getText().equals("")?0:Integer.parseInt(annoTxt.getText()),copieTxt.getText().equals("")?0:Integer.parseInt(copieTxt.getText())));
 
         if (libriTrovati.isEmpty()) {
             tabellaLibri.setItems(Biblioteca.getListaLibri());
