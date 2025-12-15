@@ -368,9 +368,9 @@ public class BibliotecaTest {
     public void testCercaLibro_Titolo() {
         System.out.println("testCercaLibro: Filtro Titolo");
 
-        Libro libro1_match = new Libro("Harry Potter - Pietra Filosofale", "", "", 1, 1);
-        Libro libro2_match = new Libro("Harry Potter - Camera dei Segreti", "", "", 1, 1);
-        Libro libro3_noMatch = new Libro("Il Signore degli Anelli", "", "", 1, 1);
+        Libro libro1_match = new Libro("Harry Potter - Pietra Filosofale", "", "A", 1, 1);
+        Libro libro2_match = new Libro("Harry Potter - Camera dei Segreti", "", "B", 1, 1);
+        Libro libro3_noMatch = new Libro("Il Signore degli Anelli", "", "C", 1, 1);
 
         Biblioteca.setListaLibri(FXCollections.observableArrayList(libro1_match, libro2_match, libro3_noMatch));
 
@@ -413,8 +413,7 @@ public class BibliotecaTest {
     @Test
     public void testAggiungiUtente() {
        System.out.println("testAggiungiUtente");
-        
-        
+
         Utente nuovoUtente = new Utente("M001", "Mario", "Rossi", "m@b.c"); 
         
         assertTrue(Biblioteca.getListaUtenti().isEmpty(), "La lista deve essere vuota prima del test.");
