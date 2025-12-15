@@ -5,6 +5,7 @@
  */
 package bibliotecauniversitaria.models;
 
+import bibliotecauniversitaria.TestHelper;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
