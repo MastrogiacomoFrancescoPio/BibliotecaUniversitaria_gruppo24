@@ -46,7 +46,7 @@ public class Libro implements Serializable {
     public Libro(String titolo, String autore, String ISBN, int annoPubblicazione, int numeroCopieTotali) {
         setTitolo(titolo);
         setAutore(autore);
-        setISBNUnchecked(ISBN);
+        setISBN(ISBN);
         setAnnoPubblicazione(annoPubblicazione); 
         setNumeroCopieTotali(numeroCopieTotali);
         setNumeroCopieDisponibili(numeroCopieTotali);
@@ -113,14 +113,6 @@ public class Libro implements Serializable {
      * @param ISBN Il nuovo codice ISBN.
      */
     public void setISBN(String ISBN) {
-        if(!Biblioteca.getListaLibri().stream().anyMatch(l->l.getISBN().equals(ISBN))) {
-            this.ISBN.set(ISBN);
-        } else {
-            throw new LibroGiaEsistenteException("Un libro con questo ISBN già esiste.");
-        }
-    }
-
-    public void setISBNUnchecked(String ISBN) {
         this.ISBN.set(ISBN);
     }
 

@@ -96,13 +96,13 @@ import javafx.util.converter.IntegerStringConverter;
         });
         
         colonnaISBN.setOnEditCommit(e -> {
-           try {
-               e.getRowValue().setISBN(e.getNewValue());
-           } catch (LibroGiaEsistenteException ex) {
-               new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK).showAndWait();
-           }
+            if(!Biblioteca.getListaLibri().stream().anyMatch(l->l.getISBN().equals(e.getNewValue()))){
+                e.getRowValue().setISBN(e.getNewValue());
+                Archivio.scrivi(tabellaLibri.getItems(), Archivio.fileLibri);
+            } else {
+                new Alert(Alert.AlertType.ERROR, "Gia esiste un libro con questo ISBN.", ButtonType.OK).showAndWait();
+            }
            tabellaLibri.refresh();
-           Archivio.scrivi(tabellaLibri.getItems(), Archivio.fileLibri);
         });
         
         colonnaCopie.setOnEditCommit(e -> {

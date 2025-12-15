@@ -175,12 +175,12 @@ public class GestioneUtentiController {
         colonnaMatricola.setOnEditCommit(e -> {
             if(!Biblioteca.getListaUtenti().stream().anyMatch(u->u.getMatricola().equals(e.getNewValue()))) {
                 e.getRowValue().setMatricola(e.getNewValue());
+                Archivio.scrivi(Biblioteca.getListaUtenti(), Archivio.fileUtenti);
+                Archivio.scrivi(Biblioteca.getListaPrestiti(), Archivio.filePrestiti);
             } else {
                 new Alert(Alert.AlertType.ERROR, "Gia esiste un utente con questa matricola.").showAndWait();
             }
             tabellaUtenti.refresh();
-            Archivio.scrivi(Biblioteca.getListaUtenti(), Archivio.fileUtenti);
-            Archivio.scrivi(Biblioteca.getListaPrestiti(), Archivio.filePrestiti);
         });
 
         colonnaEmail.setOnEditCommit(e -> {
