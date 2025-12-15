@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package bibliotecauniversitaria.controllers;
 
 import bibliotecauniversitaria.models.Archivio;
@@ -33,7 +28,6 @@ import javafx.util.converter.IntegerStringConverter;
     @FXML private TextField annoTxt;
     @FXML private TextField copieTxt;
     @FXML private TextField ISBNTxt;
-    
     @FXML private TableView<Libro> tabellaLibri;
     @FXML private TableColumn<Libro, String> colonnaTitolo;
     @FXML private TableColumn<Libro, String> colonnaAutore;
