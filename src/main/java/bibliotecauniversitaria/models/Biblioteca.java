@@ -172,9 +172,6 @@ public class Biblioteca implements Serializable {
         if (listaUtenti.contains(u)) {
             throw new UtenteGiaEsistenteException("E' già presente un utente con matricola " + u.getMatricola());
         }
-        if (u == null) {
-            return false;
-        }
         if (!trovaDaEmail(u.getEmail()).isEmpty()) {
             throw new UtenteGiaEsistenteException("E' già presente un utente con e-mail " + u.getEmail());
         }

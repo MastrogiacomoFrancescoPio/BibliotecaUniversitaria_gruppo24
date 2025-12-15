@@ -52,13 +52,13 @@ public class TestScalabilita {
             String ISBN = TestHelper.generaStringa(15);
             Utente u = new Utente(ISBN,nc,nc,String.format("%s@%s.%s",TestHelper.generaStringa(4),TestHelper.generaStringa(4),TestHelper.generaStringa(4)));
             utenti.add(u);
-            System.out.println("Creando UTENTE: " + i);
         }
+        System.out.println("Creati utenti: " + utenti.size());
         for(int i=0;i<LIBRI;i++) {
             Libro l = new Libro(String.valueOf(Math.random()*10000000),String.valueOf(Math.random()*10000000),String.valueOf(Math.random()*10000000),2025,10000);
             libri.add(l);
-            System.out.println("Creando LIBRO: " + i);
         }
+        System.out.println("Creati libri: " + libri.size());
         Biblioteca.setListaLibri(libri);
         Biblioteca.setListaUtenti(utenti);
         Utente ur = null;
@@ -73,6 +73,7 @@ public class TestScalabilita {
             if(up==null) up=p;
             prestiti.add(p);
         }
+        System.out.println("Creati prestiti: " + prestiti.size());
         Biblioteca.setListaPrestiti(prestiti);
         assertEquals(ul,up.getLibro(),"Il libro del prestito deve essere quello dato.");
         assertEquals(ur,up.getUtente(),"L'utente del prestito deve essere quello dato.");

@@ -40,6 +40,7 @@ public class Email {
     }
 
     public static void mandaMailPagina(String mail, String soggetto, String nomeDelHtml, HashMap<String, String> chiavi) throws MessagingException {
+                if(!isConfigurato()) return;
         try (InputStream in = Main.class.getResourceAsStream("html/"+nomeDelHtml+".html")) {
             String html = new BufferedReader(new InputStreamReader(in))
                     .lines()
