@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bibliotecauniversitaria.controllers;
+package bibliotecauniversitaria.controllers.login;
 
 import bibliotecauniversitaria.models.UserArchive;
 import bibliotecauniversitaria.utils.Email;
