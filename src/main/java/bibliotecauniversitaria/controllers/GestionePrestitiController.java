@@ -16,6 +16,22 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
+/**
+ * @brief Controller relativo alla gestione dei Prestiti.
+ * * Questa classe gestisce l'interfaccia grafica GestPrestiti relativa alla registrazione e amministrazione
+ * dei prestiti attivi tra utenti e libri nell'archivio della biblioteca.
+ * Le funzionalità principali includono:
+ * - Visualizzazione tabellare e ordinamento dei prestiti attivi.
+ * - Registrazione di un nuovo prestito.
+ * - Eliminazione di un prestito attivo.
+ * - Registrazione della restituzione di un libro con gestione di ritardi e sospensioni.
+ * - Ricerca di prestiti in base a Utente (Matricola) e/o Libro (ISBN).
+ * - Ritorno all'interfaccia "menu".
+ * * Nella gestione di queste funzionalità il controller utilizza i metodi del modello @ref Biblioteca.
+ * * @see GestPrestiti.fxml Interfaccia utente gestita da questo controller.
+ * @see menu.fxml Interfaccia di Menu.
+ */
+
 public class GestionePrestitiController {
     @FXML
     private TextField matricolaTxt;
@@ -33,6 +49,17 @@ public class GestionePrestitiController {
     @FXML private TableColumn<Prestito, LocalDate> colonnaDataRestituzione;
     
     
+    /**
+     * @brief Configura la tabella prestiti e inizializza lo stato del controller.
+     * * Questo metodo viene chiamato automaticamente da JavaFX dopo il caricamento del file FXML.
+     * Le sue funzionalità principali includono:
+     * - Configurazione della tabella: associa le celle della @ref tabellaPrestiti alle Properties dei modelli
+     * @ref Prestito, @ref Libro e @ref Utente tramite PropertyValueFactory e lambda expression.
+     * - Formattazione Date: configura le colonne di data (@ref colonnaDataInizio e @ref colonnaDataRestituzione) 
+     * per visualizzare il formato "gg/MM/aaaa".
+     * - Caricamento dei dati: imposta la @ref tabellaPrestiti utilizzando la lista osservabile 
+     * (ObservableList) dei prestiti attivi fornita dalla classe @ref Biblioteca.
+     */
     @FXML
     public void initialize() {
         colonnaISBN.setCellValueFactory(tc -> tc.getValue().getLibro().ISBNProperty());
@@ -72,11 +99,34 @@ public class GestionePrestitiController {
 
     }
     
+    /**
+     * @brief Ritorno all'interfaccia "menu".
+     * * Questo metodo viene chiamato al click del tasto "Torna al Menu" di GestPrestiti.
+     * Utilizza la classe @ref StageHelper per effettuare un cambio dalla scena corrente 
+     * a quella di "Menu".
+     * * @see menu.fxml Interfaccia di Menu.
+     */
+    
     @FXML
     public void onMenu(){
         StageHelper.switchToNew((Stage)matricolaTxt.getScene().getWindow(), "menu", "Menu");
     }
 
+    /**
+     * @brief Registra l'aggiunta di un nuovo prestito.
+     * * Questo metodo viene chiamato al click del tasto "Aggiungi" di GestPrestiti.
+     * Effettua una serie di controlli incrociati sui dati inseriti e sui vincoli del prestito:
+     * - Validazione Campi: controlla che le date siano selezionate e che la data di inizio non sia successiva a quella di restituzione.
+     * - Ricerca Oggetti: cerca il @ref Libro tramite ISBN e l' @ref Utente tramite Matricola. Nel caso non li trovi lancia un'eccezione 
+     * IndexOutOfBoundsException e mostra un Alert.
+     * - Controlla i vincoli di prestito:
+     *          - Se il @ref Libro non ha copie disponibili.
+     *          - Se l' @ref Utente ha già raggiunto il limite massimo di prestiti attivi.
+     *          - Se l' @ref Utente è attualmente sospeso.
+     * - Registrazione: se tutti i controlli hanno esito positivo, registra il prestito chiamando il metodo `aggiungiPrestito()` di @ref Biblioteca.
+     * - Aggiornamento: infine, aggiorna la @ref tabellaPrestiti e pulisce i campi di input.
+     * * @throws IndexOutOfBoundsException Se l'ISBN o la Matricola inseriti non corrispondono a nessun record valido in archivio (gestita con Alert).
+     */
     
     @FXML
     public void onAggiungi(){
@@ -128,6 +178,15 @@ public class GestionePrestitiController {
         dataRestituzionePicker.setValue(null);
     }
     
+    /**
+     * @brief Elimina un prestito attivo dall'archivio (operazione di rimozione generica).
+     *  Questo metodo viene chiamato al click del tasto "Rimuovi" di GestPrestiti.
+     * - Richiede la conferma all'utente tramite Alert di tipo CONFIRMATION.
+     * - In caso di esito affermativo, chiama il metodo `rimuoviPrestito()` di @ref Biblioteca, 
+     * che si occupa di rimuovere il prestito selezionato e di aggiornare le copie disponibili del libro.
+     * - Infine, aggiorna la @ref tabellaPrestiti.
+     * * @note Questo metodo è destinato a rimuovere un prestito senza i controlli di ritardo che sono invece inclusi in {@link #onRestituisci() onRestituisci()}.
+     */
     
     @FXML
     public void onRimuovi(){
@@ -141,6 +200,17 @@ public class GestionePrestitiController {
         }
     }
     
+    /**
+     * @brief Esegue una ricerca di prestiti in base ai criteri di filtro inseriti.
+     *  Questo metodo viene chiamato al click del tasto "Ricerca" di GestPrestiti.
+     * - Ricerca Criteri: cerca gli UUID di @ref Libro (tramite ISBN) e @ref Utente (tramite Matricola) 
+     * solo se i relativi campi di testo non sono vuoti.
+     * - Esecuzione Ricerca: richiama il metodo `cercaPrestito()` di @ref Biblioteca, passando gli UUID e le Date selezionate come criteri di filtro.
+     * - Aggiornamento Tabella:
+     *          - Se la lista restituita è vuota, viene mostrato un Alert e la tabella viene ripristinata a tutti i prestiti attivi.
+     *          - Se la lista restituita non è vuota, la @ref tabellaPrestiti viene impostata su tale lista, visualizzando di conseguenza i soli risultati filtrati.
+     * * @throws IndexOutOfBoundsException Se l'ISBN o la Matricola inseriti come criteri non esistono nell'archivio (gestita con Alert).
+     */
     @FXML
     public void onRicerca(){
         Libro libro=null;
@@ -171,6 +241,19 @@ public class GestionePrestitiController {
         }
     }
     
+    /**
+     * @brief Registra la restituzione di un libro con gestione dei ritardi.
+     * Questo metodo viene chiamato per registrare la restituzione di un prestito selezionato in tabella.
+     * - Controllo Selezione: richiede la selezione di un prestito tramite Alert in caso di campo vuoto.
+     * - Gestione Ritardo: esegue il controllo del ritardo di restituzione sul prestito selezionato:
+     * - Ritardo Grave: se il ritardo supera il valore configurato (`RITARDO_SOSPENSIONE_AUTOMATICA`), l' @ref Utente viene automaticamente sospeso 
+     * per il periodo configurato (`GIORNI_SOSPENSIONE`).
+     * - Ritardo Lieve: se il ritardo supera il valore configurato (`RITARDO_SEGNALAZIONE`), 
+     * l' @ref Utente viene segnalato e il contatore segnalazioni viene aggiornato.
+     * - Rimozione/Aggiornamento: indipendentemente dal ritardo (dopo aver applicato eventuali sanzioni), il prestito viene rimosso 
+     * tramite {@link Biblioteca#rimuoviPrestito(Prestito) rimuoviPrestito()} e la @ref tabellaPrestiti viene aggiornata.
+     */
+    
     @FXML
     public void onRestituisci(){
         Prestito selezionato=tabellaPrestiti.getSelectionModel().getSelectedItem();
@@ -191,21 +274,44 @@ public class GestionePrestitiController {
         tabellaPrestiti.setItems(Biblioteca.getListaPrestiti());
     }
 
+    /**
+     * @brief Ordinamento dei prestiti per ISBN del libro.
+     * Questo metodo viene chiamato al click dell'opzione "ISBN" nel menù a tendina di Gestprestiti.
+     * Richiama il metodo {@link Biblioteca#ordinaPrestitiISBN(ObservableList) ordinaPrestitiISBN()} di @ref Biblioteca 
+     * per visualizzare i prestiti in ordine crescente di ISBN.
+     */
     @FXML
     public void onOrdinaISBN() {
         tabellaPrestiti.setItems(Biblioteca.ordinaPrestitiISBN(tabellaPrestiti.getItems()));
     }
+    
+    /**
+     * @brief Ordinamento dei prestiti per Matricola dell'utente.
+     * Questo metodo viene chiamato al click dell'opzione "Matricola" nel menù a tendina.
+     * Richiama il metodo {@link Biblioteca#ordinaPrestitiMatricola(ObservableList) ordinaPrestitiMatricola()} di @ref Biblioteca 
+     * per visualizzare i prestiti in ordine crescente di Matricola.
+     */
 
     @FXML
     public void onOrdinaMatricola() {
         tabellaPrestiti.setItems(Biblioteca.ordinaPrestitiMatricola(tabellaPrestiti.getItems()));
     }
-
+    /**
+     * @brief Ordinamento dei prestiti per Data di Inizio.
+     * Questo metodo viene chiamato al click dell'opzione "Data Inizio" nel menù a tendina.
+     * Richiama il metodo {@link Biblioteca#ordinaPrestitiDataInizio(ObservableList) ordinaPrestitiDataInizio()} di @ref Biblioteca 
+     * per visualizzare i prestiti in ordine cronologico di data di inizio.
+     */
     @FXML
     public void onOrdinaDataInizio() {
         tabellaPrestiti.setItems(Biblioteca.ordinaPrestitiDataInizio(tabellaPrestiti.getItems()));
     }
-
+    /**
+     * @brief Ordinamento dei prestiti per Data di Restituzione Prevista.
+     * Questo metodo viene chiamato al click dell'opzione "Data Restituzione Prevista" nel menù a tendina.
+     * Richiama il metodo {@link Biblioteca#ordinaPrestitiDataRestituzionePrevista(ObservableList) ordinaPrestitiDataRestituzionePrevista()} di @ref Biblioteca 
+     * per visualizzare i prestiti in ordine cronologico di scadenza.
+     */
     @FXML
     public void onOrdinaDataRestituzionePrevista() {
         tabellaPrestiti.setItems(Biblioteca.ordinaPrestitiDataRestituzionePrevista(tabellaPrestiti.getItems()));
