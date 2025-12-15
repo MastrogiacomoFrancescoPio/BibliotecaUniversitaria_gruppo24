@@ -5,12 +5,12 @@
  */
 package bibliotecauniversitaria.controllers;
 
-import it.unisa.diem.oop.aaaaa.exceptions.UtenteGiaEsistenteException;
-import it.unisa.diem.oop.aaaaa.models.Archivio;
-import it.unisa.diem.oop.aaaaa.models.Biblioteca;
-import it.unisa.diem.oop.aaaaa.models.Prestito;
-import it.unisa.diem.oop.aaaaa.models.Utente;
-import it.unisa.diem.oop.aaaaa.utils.StageHelper;
+import bibliotecauniversitaria.exceptions.UtenteGiaEsistenteException;
+import bibliotecauniversitaria.models.Archivio;
+import bibliotecauniversitaria.models.Biblioteca;
+import bibliotecauniversitaria.models.Prestito;
+import bibliotecauniversitaria.models.Utente;
+import bibliotecauniversitaria.utils.StageHelper;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,11 +22,9 @@ import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Region;
-import javafx.scene.shape.Arc;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
