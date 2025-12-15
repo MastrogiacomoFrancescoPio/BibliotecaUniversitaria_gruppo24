@@ -1,0 +1,4 @@
+.button-base:pressed {
+    -fx-translate-y: 1px;
+    -fx-effect: none; 
+}

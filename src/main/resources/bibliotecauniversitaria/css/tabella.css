@@ -1,0 +1,47 @@
+/* Sfondo TableView 
+.table-view {
+    -fx-background-color: linear-gradient(to bottom, orange, orange);
+}*/
+
+/* Intestazioni colonne 
+.table-view .column-header-background {
+    -fx-background-color: #ff4500;
+    -fx-background-radius: 5 5 0 0;
+}*/
+.table-view .column-header {
+    -fx-background-color: #d87040;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* Righe normali */
+.table-view .table-row-cell {
+    -fx-background-color: #ffb777;
+    -fx-text-fill: white;
+}
+
+/* Righe alterne */
+.table-view .table-row-cell:odd {
+    -fx-background-color: #ffaa66;
+}
+
+/* Riga selezionata */
+.table-view .table-row-cell:selected {
+    -fx-background-color: #e6a46b;
+    -fx-text-fill: black;
+}
+
+/* Celle testo */
+.table-view .table-cell {
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+}
+
+/* Hover su riga */
+.table-view .table-row-cell:hover {
+    -fx-background-color: #f0a568;
+}
