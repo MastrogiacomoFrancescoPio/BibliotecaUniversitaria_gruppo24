@@ -158,12 +158,4 @@ public class Email {
         return codice;
     }
     
-    /**
-     * @brief Restituisce una rappresentazione testuale della configurazione SMTP corrente.
-     * Utile per scopi di debug per verificare host, porta e utente configurati.
-     * @return Stringa formattata con i dettagli di connessione.
-     */
-    public static String aStringa() {
-        return host + ":" + port + " (" + mail + ":" + password + ") [TLS: " + tls + "]";
-    }
 }

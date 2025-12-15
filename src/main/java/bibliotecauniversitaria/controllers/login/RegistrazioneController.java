@@ -20,8 +20,12 @@ import java.io.IOException;
 import javafx.scene.control.CheckBox;
 
 /**
+ * @brief Controller per la schermata di Registrazione o Reimpostazione Credenziali.
  *
- * @author ACER
+ * Questa classe gestisce la creazione iniziale dell'utente amministratore o la reimpostazione
+ * delle sue credenziali (email e password).
+ *
+ * @see registrazione.fxml Interfaccia utente gestita da questo controller.
  */
 public class RegistrazioneController {
     public TextField email;
@@ -33,6 +37,15 @@ public class RegistrazioneController {
     public CheckBox mostraPassword;
     
     public UserArchive user=null;
+    
+    /**
+     * @brief Inizializza il controller e verifica lo stato dell'utente.
+     *
+     * - Verifica se l'utente esiste: tenta di caricare i dati utente .
+     * -se un utente esiste, imposta il testo del campo (`registrazioneFld`) su "REIMPOSTA UTENTE" 
+     * e precompila l'email; altrimenti, rimane in modalità "REGISTRAZIONE".
+     * - Binding: effettua il binding bidirezionale per i campi password.
+     */
 
     @FXML
     protected void initialize() {
@@ -47,6 +60,15 @@ public class RegistrazioneController {
         if(user!=null) email.setText(user.email);
     }
 
+    /**
+     * @brief Gestisce la registrazione o la reimpostazione delle credenziali.
+     *
+     * Questo metodo viene chiamato al click del pulsante "Registra" (o "Reimposta"):
+     * - Validazione dei campi: controlla la validità dell'email e verifica che tutti i campi password siano pieni.
+     * - Conferma Password: verifica che le due password inserite corrispondano.
+     * - Creazione/salvataggio: crea un nuovo oggetto @ref UserArchive, cripta la password e salva l'archivio.
+     * - Cambio di interfaccia: in caso di successo, reindirizza l'utente alla {@link LoginController schermata di accesso}.
+     */
 
     @FXML
     protected void onRegister() {
@@ -74,6 +96,13 @@ public class RegistrazioneController {
             new Alert(Alert.AlertType.ERROR, "Impossibile salvare l'utente! ("+e.getMessage()+")").showAndWait();
         }
     }
+    
+    /**
+     * @brief Gestisce l'interazione per visualizzare/nascondere le password.
+     *
+     * Questo metodo viene chiamato in risposta al click sul CheckBox "Mostra Password":
+     * - alterna la visibilità tra i campi `PasswordField` e `TextField` per entrambe le password.
+     */
     
     @FXML
     protected void onPasswordShowButton() {
