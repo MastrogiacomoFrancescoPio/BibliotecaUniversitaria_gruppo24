@@ -109,13 +109,13 @@ import javafx.util.converter.IntegerStringConverter;
             try {
                 e.getRowValue().setNumeroCopieDisponibili(e.getNewValue());
             } catch (IllegalArgumentException ex){
-                new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
+                Alert alert = new Alert(Alert.AlertType.WARNING, ex.getMessage());
+                alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+                alert.showAndWait();
                 tabellaLibri.refresh();
             }
             Archivio.scrivi(tabellaLibri.getItems(), Archivio.fileLibri);
         });
-
-        
         tabellaLibri.setItems(Biblioteca.getListaLibri());
     }
     
@@ -152,44 +152,44 @@ import javafx.util.converter.IntegerStringConverter;
     public void onAggiungi(){
         int anno, copie;
         if(titoloTxt.getText().equals("")){
-            new Alert(Alert.AlertType.ERROR, "Il campo titolo non può essere vuoto.").showAndWait();
+            new Alert(Alert.AlertType.WARNING, "Il campo titolo non può essere vuoto.").showAndWait();
             return;
         }
         if(autoreTxt.getText().equals("")) {
-            new Alert(Alert.AlertType.ERROR, "Il campo autore non può essere vuoto.").showAndWait();
+            new Alert(Alert.AlertType.WARNING, "Il campo autore non può essere vuoto.").showAndWait();
             return;
         }
         if(annoTxt.getText().equals("")) {
-            new Alert(Alert.AlertType.ERROR, "Il campo anno di pubblicazione non può essere vuoto.").showAndWait();
+            new Alert(Alert.AlertType.WARNING, "Il campo anno di pubblicazione non può essere vuoto.").showAndWait();
             return;
         }
         try{
             anno=Integer.parseInt(annoTxt.getText());
         } catch (NumberFormatException e) {
-            new Alert(Alert.AlertType.ERROR, "Il campo anno di pubblicazione deve essere un numero intero").showAndWait();
+            new Alert(Alert.AlertType.WARNING, "Il campo anno di pubblicazione deve essere un numero intero").showAndWait();
             return;
         }
         if(ISBNTxt.getText().equals("")) {
-            new Alert(Alert.AlertType.ERROR, "Il campo ISBN non può essere vuoto.").showAndWait();
+            new Alert(Alert.AlertType.WARNING, "Il campo ISBN non può essere vuoto.").showAndWait();
             return;
         }
         if(copieTxt.getText().equals("")){
-            new Alert(Alert.AlertType.ERROR, "Il campo copie non può essere vuoto.").showAndWait();
+            new Alert(Alert.AlertType.WARNING, "Il campo copie non può essere vuoto.").showAndWait();
             return;
         }
         try{
            copie=Integer.parseInt(copieTxt.getText());
         } catch (NumberFormatException e){
-            new Alert(Alert.AlertType.ERROR, "Il campo copie deve essere un numero intero").showAndWait();
+            new Alert(Alert.AlertType.WARNING, "Il campo copie deve essere un numero intero").showAndWait();
             return;
         }
         try{
             Biblioteca.aggiungiLibro(new Libro(titoloTxt.getText(), autoreTxt.getText(),ISBNTxt.getText(),anno,copie));
         } catch(LibroGiaEsistenteException ex){
-            new Alert(Alert.AlertType.ERROR, "È già presente un libro con lo stesso ISBN").showAndWait();
+            new Alert(Alert.AlertType.WARNING, "È già presente un libro con lo stesso ISBN").showAndWait();
             return;
         } catch(IllegalArgumentException e){
-            new Alert(Alert.AlertType.ERROR, e.getMessage()).showAndWait();
+            new Alert(Alert.AlertType.WARNING, e.getMessage()).showAndWait();
         }
         tabellaLibri.setItems(Biblioteca.getListaLibri());
         
@@ -230,7 +230,7 @@ import javafx.util.converter.IntegerStringConverter;
             try{
                 Biblioteca.rimuoviLibro(selezionato);
             } catch (LibroInPrestitoException e){
-                new Alert(Alert.AlertType.ERROR, e.getMessage()).showAndWait();
+                new Alert(Alert.AlertType.WARNING, e.getMessage()).showAndWait();
             }
             tabellaLibri.setItems(Biblioteca.getListaLibri());
         }

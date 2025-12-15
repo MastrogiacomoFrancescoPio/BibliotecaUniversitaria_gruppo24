@@ -173,10 +173,14 @@ public class GestioneUtentiController {
         });
 
         colonnaMatricola.setOnEditCommit(e -> {
-            e.getRowValue().setMatricola(e.getNewValue());
+            if(!Biblioteca.getListaUtenti().stream().anyMatch(u->u.getMatricola().equals(e.getNewValue()))) {
+                e.getRowValue().setMatricola(e.getNewValue());
+            } else {
+                new Alert(Alert.AlertType.ERROR, "Gia esiste un utente con questa matricola.").showAndWait();
+            }
+            tabellaUtenti.refresh();
             Archivio.scrivi(Biblioteca.getListaUtenti(), Archivio.fileUtenti);
             Archivio.scrivi(Biblioteca.getListaPrestiti(), Archivio.filePrestiti);
-            System.out.println(Biblioteca.getListaPrestiti().stream().map(aa -> aa.toString()).collect(Collectors.toList()));
         });
 
         colonnaEmail.setOnEditCommit(e -> {
