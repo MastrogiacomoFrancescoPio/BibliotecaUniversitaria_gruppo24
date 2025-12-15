@@ -103,7 +103,7 @@ public class GestionePrestitiController {
      * @brief Ritorno all'interfaccia "menu".
      * * Questo metodo viene chiamato al click del tasto "Torna al Menu" di GestPrestiti.
      * Utilizza la classe @ref StageHelper per effettuare un cambio dalla scena corrente 
-     * a quella di "Menu".
+     * a quella di {@link MenuController interfaccia Menu}.
      * * @see menu.fxml Interfaccia di Menu.
      */
     

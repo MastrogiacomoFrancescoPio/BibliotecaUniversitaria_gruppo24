@@ -13,6 +13,21 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import javafx.scene.control.CheckBox;
 
+/**
+ * @brief Controller per la schermata di Accesso.
+ *
+ * Questa classe gestisce la logica di accesso dell'utente, inclusa la validazione
+ * delle credenziali e la gestione di funzionalità  come la
+ * visualizzazione della password e il recupero password.
+ *
+ * Le funzionalità principali includono:
+ * - Caricamento dei dati utente da archivio (@ref UserArchive).
+ * - Login tramite confronto della password.
+ * - Gestione del recupero password tramite invio di codice via email.
+ * - Controllo per la visualizzazione/nascondimento della password.
+ *
+ * @see schermatalogin.fxml Interfaccia utente gestita da questo controller.
+ */
 public class LoginController {
 
     public PasswordField passwordField;
@@ -21,6 +36,17 @@ public class LoginController {
 
     @FXML
     private UserArchive user;
+    
+    /**
+     * @brief Inizializza il controller dopo il caricamento del file FXML.
+     *
+     * Le sue funzionalità principali includono:
+     * - Caricamento dell'Archivio Utente: tenta di caricare i dati utente presistenti da @ref UserArchive.
+     * - Prima esecuzione: in caso di errore di caricamento (prima esecuzione o assenza di dati), 
+     * reindirizza l'utente alla {@link RegistrazioneController schermata di registrazione}.
+     * - Binding:effettua il binding bidirezionale tra i campi `passwordField` (nascosto) e 
+     * `passwordTextField` (visibile), in modo che l'input sia sincronizzato.
+     */
 
     @FXML
     protected void initialize() {
@@ -31,6 +57,16 @@ public class LoginController {
         }
         passwordField.textProperty().bindBidirectional(passwordTextField.textProperty());
     }
+    
+    /**
+     * @brief Gestisce l'interazione per visualizzare/nascondere la password.
+     *
+     * Questo metodo viene chiamato al click sul CheckBox (@ref mostraPassword):
+     * - Visualizzazione: se il CheckBox è selezionato, rende visibile {@link #passwordTextField passwordTextField}
+     * e nasconde {@link #passwordField passwordField}.
+     * - Nascondimento: se il CheckBox non è selezionato, nasconde {@link #passwordTextField passwordTextField}
+     * e rende visibile {@link #passwordField passwordField}.
+     */
 
     @FXML
     protected void onPasswordShowButton() {
@@ -38,6 +74,17 @@ public class LoginController {
         passwordField.setVisible(!mostraPassword.isSelected());
 
     }
+    
+    /**
+     * @brief Avvia il processo di recupero password.
+     *
+     * Questo metodo viene chiamato al click sul pulsante o link "Password Dimenticata":
+     * - Configurazione Email: controlla se il servizio SMTP (tramite @ref Email) è configurato: se non lo è, mostra un Alert di Warning e interrompe.
+     * - Invio Codice: chiama il metodo `mandaReset()` di @ref Email per inviare un codice di verifica all'email dell'utente registrato.
+     * - Cambio d'interfaccia: se l'invio ha successo, effettua un cambio di scena tramite @ref StageHelper dalla scena corrente a
+     * {@link InserireCodiceController Inserisci codice} e passa il codice generato al controller di destinazione.
+     *
+     */
 
     @FXML
     protected void onPasswordDimenticata() {
@@ -52,6 +99,15 @@ public class LoginController {
         }
     }
 
+    /**
+     * @brief Esegue il tentativo di accesso (login).
+     *
+     * Questo metodo viene chiamato al click del pulsante "Login":
+     * - Validazione dei campi: verifica che il campo password non sia vuoto, mostrando un Alert in caso affermativo.
+     * - Verifica credenziali: utilizza {@link PasswordHelper#checkpw(String, String) checkpw()} per confrontare la password inserita con l'hash salvato nell'archivio.
+     *       - Successo: in caso di corrispondenza, effettua il cambio di scena verso l'{@link MenuController interfaccia Menu}.
+     *       - Fallimento: se le password non corrispondono, mostra un Alert di tipo ERROR ("Password errata!").
+     */
     @FXML
     protected void onLogin() {
         if(passwordField.getText().equals("")){
