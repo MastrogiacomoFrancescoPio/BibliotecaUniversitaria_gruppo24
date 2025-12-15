@@ -7,7 +7,7 @@ package bibliotecauniversitaria.models;
 
 import java.io.*;
 
-public class ArchivioUser implements Serializable {
+public class UserArchive implements Serializable {
 
     public String hashedPassword;
     public String email;
@@ -15,7 +15,7 @@ public class ArchivioUser implements Serializable {
     public static String NAME = new File(Archivio.cartellaData,"user.bbl").getPath();
 
 
-    public ArchivioUser(String hashedPassword, String email) {
+    public UserArchive(String hashedPassword, String email) {
         this.hashedPassword = hashedPassword;
         this.email = email;
     }
@@ -23,7 +23,7 @@ public class ArchivioUser implements Serializable {
 
     public static Boolean exists(String path) {
         try {
-            ArchivioUser.loadFrom(path);
+            UserArchive.loadFrom(path);
             return true;
         } catch (IOException e) {
             return false;
@@ -38,9 +38,9 @@ public class ArchivioUser implements Serializable {
     }
 
 
-    public static ArchivioUser loadFrom(String path) throws IOException {
+    public static UserArchive loadFrom(String path) throws IOException {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File(path)))) {
-            return (ArchivioUser) ois.readObject();
+            return (UserArchive) ois.readObject();
         } catch (ClassNotFoundException e) {
             System.out.println("Serialized file error.");
             return null;

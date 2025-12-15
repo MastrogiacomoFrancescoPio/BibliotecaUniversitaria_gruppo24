@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import it.unisa.diem.oop.aaaaa.utils.Email;
+import bibliotecauniversitaria.utils.Email;
 import javafx.beans.property.*;
 
 import javax.mail.MessagingException;
