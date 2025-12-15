@@ -8,6 +8,7 @@ import java.time.Year;
 import java.util.Objects;
 import java.util.UUID;
 
+import bibliotecauniversitaria.exceptions.LibroGiaEsistenteException;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;

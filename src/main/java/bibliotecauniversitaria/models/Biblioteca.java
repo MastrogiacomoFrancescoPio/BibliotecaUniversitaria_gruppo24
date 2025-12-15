@@ -166,8 +166,8 @@ public class Biblioteca implements Serializable {
      * @throws LibroGiaEsistenteException Se esiste già un libro con lo stesso ISBN.
      */
     public static boolean aggiungiLibro(Libro l) throws LibroGiaEsistenteException {
-        if (getListaLibri().contains(l)) {
-            throw new LibroGiaEsistenteException("E' già presente un libro con ISBN" + l.ISBNProperty().get());
+        if(getListaLibri().contains(l)){
+            throw new LibroGiaEsistenteException("Un libro con lo stesso ISBN gia esiste.");
         }
         boolean b = listaLibri.add(l);
         Archivio.scrivi(listaLibri, Archivio.fileLibri);

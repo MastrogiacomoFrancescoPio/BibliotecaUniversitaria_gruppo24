@@ -95,6 +95,21 @@ public class GestionePrestitiController {
             }
         });
 
+        tabellaPrestiti.setRowFactory(tv -> {
+            return new TableRow<Prestito>() {
+                @Override
+                protected void updateItem(Prestito item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setStyle("");
+                    } else if (item.verificaRitardo(0)) {
+                        setStyle("-fx-background-color: #e53632;");
+                    } else {
+                        setStyle("");
+                    }
+                }
+            };
+        });
         tabellaPrestiti.setItems(Biblioteca.getListaPrestiti());
 
     }
